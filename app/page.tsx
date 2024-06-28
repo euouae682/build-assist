@@ -17,16 +17,6 @@ import React, { useState, useEffect } from "react";
 import Item from "./Item";
 import { getIndices, testIndices } from "./itemFuncs";
 
-type GearBoost = {
-  name: string,
-  rarity: string,
-  spell: number,
-  melee: number,
-  poison: number,
-  mana: number,
-  life: number
-}
-
 export type IDs = {
   [key: string]: number | {
     min: number,
@@ -46,6 +36,10 @@ export type Item = {
       max: number
     },
   },
+  requirements: {
+    level: number
+    [key: string]: number
+  }
   identifications: IDs,
   [key: string]: unknown
 };
@@ -66,21 +60,33 @@ export type Damage = {
   }
 }
 
+export type Indices = {
+  level: number,
+  name: string,
+  rarity: string,
+  spell: number,
+  melee: number,
+  poison: number,
+  mana: number,
+  life: number
+}
+
 export default function Home() {
   const [weaponType, setWeaponType] = useState('');
   const [weapon, setWeapon] = useState('');
   const [powderSlots, setPowderSlots] = useState(0);
   const [powdering, setPowdering] = useState('');
-  const [gearType, setGearType] = useState('helmet');
+  const [gearType, setGearType] = useState('');
 
   const [useSteals, setUseSteals] = useState(true);
-  const [cps, setCps] = useState(6);
+  const [cps, setCps] = useState(0);
   const [spellCycle, setSpellCycle] = useState('');
   const [sortBy, setSortBy] = useState('spell');
 
   const [itemsList, setItemsList] = useState<ItemList | null>(null);
   const [weaponsList, setWeaponsList] = useState<string[] | null>(null);
   const [gearList, setGearList] = useState<string[] | null>(null);
+  const [indices, setIndices] = useState<Indices[] | null>(null);
 
   useEffect(() => {
     getItems();
@@ -123,20 +129,29 @@ export default function Home() {
     }
   }
 
-  const calculateGearBoosts = (): GearBoost[] => {
-    filterGear(gearType);
+  const calculateGearBoosts = (): void => {
+    console.log(gearList);
 
-    // Calculate damage from Item
-    if (itemsList != null) {
-      testIndices(itemsList[weapon], powdering, itemsList['Conflagrate'], useSteals, cps, spellCycle);
+    let indicesList: Indices[] = [];
+    if (itemsList != null && gearList != null) {
+      gearList.map((gearName) => {
+        indicesList.push(getIndices(itemsList[weapon], powdering, gearName, itemsList[gearName], useSteals, cps, spellCycle));
+      })
     }
+    
+    console.log(JSON.stringify(indicesList));
 
-    sortList(sortBy);
-    return [];
+    if (sortBy === "spell" || sortBy === "melee" || sortBy === "poison" || sortBy === "mana" || sortBy === "life") {
+      sortList(indicesList, sortBy);
+    }
+    setIndices(indicesList);
   }
 
-  const sortList = (key: string): void => {
-
+  const sortList = (list: Indices[], key: "spell" | "melee" | "poison" | "mana" | "life"): Indices[] => {
+    if (list !== null) {
+      return list.sort((index1, index2) => index2[key] - index1[key]);
+    }
+    return [];
   }
 
   const onClassChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
@@ -156,6 +171,7 @@ export default function Home() {
 
   const onGearChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     setGearType(e.target.value);
+    filterGear(e.target.value);
   }
 
   const onPlaystyleChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
@@ -181,11 +197,25 @@ export default function Home() {
 
   const onFormSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
-    filterGear(gearType);
 
-
-    
-    calculateGearBoosts();
+    if (weapon === '') {
+      alert("Warning: Weapon not selected!");
+    }
+    else if (gearType === '') {
+      alert("Warning: Gear type not selected!");
+    }
+    else if (cps === 0) {
+      alert("Warning: CPS must be a positive number!");
+    }
+    else if (spellCycle === '') {
+      alert("Warning: Spell cycle not entered!")
+    }
+    else if (sortBy === '') {
+      alert("Warning: Index to sort by not selected!");
+    }
+    else {
+      calculateGearBoosts();
+    }
   }
 
   return (
@@ -226,7 +256,8 @@ export default function Home() {
 
         <div>
           <label htmlFor="wpn">Gear: </label>
-          <select id="wpn" name="wpn" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onGearChange}>
+          <select id="wpn" name="wpn" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onGearChange} defaultValue="default">
+            <option disabled value="default"> -- select an option -- </option>
             <option value="helmet">Helmet</option>
             <option value="chestplate">Chestplate</option>
             <option value="leggings">Leggings</option>
@@ -271,7 +302,7 @@ export default function Home() {
 
       <div>
         <h2 className="text-xl font-bold">Results</h2>
-        <div className="border border-slate-600">
+        <div className="border border-slate-600 w-[900px]">
           <div className="m-2 flex">
             <p className="w-64 font-bold">Name</p>
             <p className="w-32 font-bold">Spell</p>
@@ -280,9 +311,20 @@ export default function Home() {
             <p className="w-32 font-bold">Mana Sustain</p>
             <p className="w-32 font-bold">Life Sustain</p>
           </div>
-          <Item level={99} name="Aphotic" rarity="legendary" spell={400} melee={-150} poison={0} mana={4} life={0} />
-          <Item level={90} name="Sano's Care" rarity="unique" spell={0} melee={0} poison={0} mana={3} life={400} />
-          <Item level={94} name="Nighthawk" rarity="fabled" spell={190} melee={-80} poison={0} mana={6} life={0} />
+          {
+            indices ? indices.map((index) => {
+              return <Item 
+                key={index.name}
+                level={index.level} 
+                name={index.name} 
+                rarity={index.rarity} 
+                spell={index.spell} 
+                melee={index.melee}
+                poison={index.poison}
+                mana={index.mana}
+                life={index.life} />
+            }) : <></>
+          }
         </div>
       </div>
     </main>

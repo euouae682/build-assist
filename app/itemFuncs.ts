@@ -1,5 +1,5 @@
 import { POWDERS, ATK_MULTIPLIERS, Powder } from "./constants";
-import { Item, ItemList, Damage, IDs } from "./page";
+import { Item, ItemList, Damage, IDs, Indices } from "./page";
 
 // Get the base damages/base attack speed of a weapon
 const getDamages = (weapon: Item): Damage => {
@@ -275,35 +275,70 @@ export const calcMeleeDamage = (damage: Damage, ids: IDs) => {
 
 // Returns poison DPS.
 export const calcPoisonDamage = (ids: IDs): number => {
-    return getIDMax(ids, "poison") / 3;
+    return Math.max(getIDMax(ids, "poison") / 3, 0);
 }
 
-const accumulateIDs = () => {
+const accumulateIDs = (weaponIDs: IDs, gearIDs: IDs): IDs => {
+    let newIDs = structuredClone(weaponIDs);
+    let key: keyof IDs;
+    for (key in gearIDs) {
+        if (key in newIDs) {
+            let existingID = newIDs[key];
+            if (typeof existingID !== "number") {
+                existingID = existingID['max']
+            }
 
+            let newID = gearIDs[key];
+            if (typeof newID !== "number") {
+                newID = newID['max']
+            }
+
+            newIDs[key] = existingID + newID;
+        }
+        else {
+            newIDs[key] = gearIDs[key];
+        }
+    }
+    return newIDs;
 }
 
-export const getSpellIndex = () => {
-
+export const getSpellIndex = (damage: Damage, weaponIDs: IDs, accumulatedIDs: IDs): number => {
+    return calcSpellDamage(damage, accumulatedIDs) - calcSpellDamage(damage, weaponIDs);
 }
 
-export const getMeleeIndex = () => {
-
+export const getMeleeIndex = (damage: Damage, weaponIDs: IDs, accumulatedIDs: IDs): number => {
+    return calcMeleeDamage(damage, accumulatedIDs) - calcMeleeDamage(damage, weaponIDs);
 }
 
-export const getPoisonIndex = () => {
-    
+export const getPoisonIndex = (weaponIDs: IDs, accumulatedIDs: IDs): number => {
+    return calcPoisonDamage(accumulatedIDs) - calcPoisonDamage(weaponIDs);
 }
 
 export const getManaIndex = () => {
-
+    return 0;
 }
 
 export const getLifeIndex = () => {
-
+    return 0;
 }
 
-export const getIndices = (weapon: Item, powdering: string, gear: Item, steals: boolean, cps: number, spellCycle: string) => {
+export const getIndices = (weapon: Item, powdering: string, gearName: string, gear: Item, steals: boolean, cps: number, spellCycle: string): Indices => {
+    const baseDamage: Damage = getDamages(weapon);
+    const powdersToApply: Powder[] = compressPowders(powdering);
+    const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
+    const weaponIDs: IDs = weapon['identifications'] ? weapon['identifications'] : {};
+    const accumulatedIDs: IDs = accumulateIDs(weaponIDs, gear['identifications'] ? gear['identifications'] : {});
 
+    return {
+        level: gear['requirements']['level'],
+        name: gearName,
+        rarity: gear['tier'],
+        spell: getSpellIndex(powderedDamage, weaponIDs, accumulatedIDs),
+        melee: getMeleeIndex(powderedDamage, weaponIDs, accumulatedIDs),
+        poison: getPoisonIndex(weaponIDs, accumulatedIDs),
+        mana: getManaIndex(),
+        life: getLifeIndex()
+    };
 }
 
 export const testIndices = (weapon: Item, powdering: string, gear: Item, steals: boolean, cps: number, spellCycle: string) => {
@@ -347,6 +382,11 @@ export const testIndices = (weapon: Item, powdering: string, gear: Item, steals:
     console.log("Spell: " + calcSpellDamage(powderedDamage, weapon['identifications']));
     console.log("Melee: " + calcMeleeDamage(powderedDamage, weapon['identifications']));
     console.log("Poison: " + calcPoisonDamage(weapon['identifications']));
+
+    console.log("========== ACCUMULATE IDS ==========")
+    console.log("IDs of Weapon: " + JSON.stringify(weapon['identifications']));
+    console.log("IDs of Gear: " + JSON.stringify(gear['identifications']));
+    console.log("Accumulated IDs: " + JSON.stringify(accumulateIDs(weapon['identifications'], gear['identifications'])));
 
     console.log("========== CALCULATE SPELL INDEX ==========");
     console.log("========== CALCULATE MELEE INDEX ==========");

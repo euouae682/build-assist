@@ -37,11 +37,11 @@ export default function Item(props: ItemProps) {
     return (
       <div className="m-2 flex">
         <p style={{color: getRarityColor(props.rarity)}} className="w-64">Lv. {props.level} { props.name }</p>
-        <p className="w-32">{ props.spell }</p>
-        <p className="w-32">{ props.melee }</p>
-        <p className="w-32">{ props.poison }</p>
-        <p className="w-32">{ props.mana }</p>
-        <p className="w-32">{ props.life }</p>
+        <p className="w-32">{ props.spell.toFixed(2) }</p>
+        <p className="w-32">{ props.melee.toFixed(2) }</p>
+        <p className="w-32">{ props.poison.toFixed(2) }</p>
+        <p className="w-32">{ props.mana.toFixed(2) }</p>
+        <p className="w-32">{ props.life.toFixed(2) }</p>
       </div>
     );
   }
