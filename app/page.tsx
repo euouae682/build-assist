@@ -1,5 +1,18 @@
 'use client';
 
+// TODO: add `how are indices calculated`?
+// TODO: add credits/resources
+// TODO: add limitations section (This app is by NO MEANS a concrete representation of what items are best for your build,
+//       and should NOT be used as the sole source of decisionmaking for builds. It only serves to give a GENERAL idea of 
+//       what gear would be effective for a weapon).
+// This app does not consider:
+//     - Spell Conversions
+//     - Major IDs
+//     - Abilities/the Ability Tree
+//     - Skill point bonuses
+//     - Only looks at specific items in isolation (potential issue for Spell Cost, HPR, or cancelstack)
+//     - Other important aspects of builds, i.e. Walkspeed or Defensive stats
+
 import React, { useState, useEffect } from "react";
 import Item from "./Item";
 import { getIndices, testIndices } from "./itemFuncs";
@@ -134,6 +147,7 @@ export default function Home() {
   const onWeaponsChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     setWeapon(e.target.value);
     getPowderSlots(e.target.value);
+    setPowdering('');
   }
 
   const onPowderingChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -205,9 +219,9 @@ export default function Home() {
           </select>
         </div>
 
-        <div className={powderSlots === 0 ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"} onChange={onPowderingChange}>
+        <div className={powderSlots === 0 ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="pwd">Powdering: </label>
-          <input type="text" id="pwd" name="pwd" className="bg-slate-200 rounded-md p-1 transition" pattern={"([etwfa][1-6]){" + powderSlots + "}"} placeholder={powderSlots + " slots"} />
+          <input type="text" id="pwd" name="pwd" className="bg-slate-200 rounded-md p-1 transition" pattern={"([etwfa][1-6]){" + powderSlots + "}"} placeholder={powderSlots + " slots"} value={powdering} onChange={onPowderingChange} />
         </div>
 
         <div>

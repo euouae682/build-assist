@@ -112,16 +112,170 @@ const getIDMax = (ids: IDs, idName: string): number => {
     return 0;
 }
 
-export const calcSpellDamage = () => {
+// Returns spell damage.
+// Specifically, returns the average damage of a theoretical spell with 100% neutral spell conversion.
+export const calcSpellDamage = (damage: Damage, ids: IDs) => {
+    const spellPct = getIDMax(ids, "spellDamage") / 100;
+    const spellRaw = getIDMax(ids, "rawSpellDamage");
 
+    const nPct = getIDMax(ids, "neutralDamage") / 100 + getIDMax(ids, "neutralSpellDamage") / 100;
+    const nRaw = getIDMax(ids, "rawNeutralDamage") + getIDMax(ids, "rawNeutralSpellDamage");
+    const ePct = getIDMax(ids, "earthDamage") / 100 + getIDMax(ids, "earthSpellDamage") / 100;
+    const eRaw = getIDMax(ids, "rawEarthDamage") + getIDMax(ids, "rawEarthSpellDamage");
+    const tPct = getIDMax(ids, "thunderDamage") / 100 + getIDMax(ids, "thunderSpellDamage") / 100;
+    const tRaw = getIDMax(ids, "rawThunderDamage") + getIDMax(ids, "rawThunderSpellDamage");
+    const wPct = getIDMax(ids, "waterDamage") / 100 + getIDMax(ids, "waterSpellDamage") / 100;
+    const wRaw = getIDMax(ids, "rawWaterDamage") + getIDMax(ids, "rawWaterSpellDamage");
+    const fPct = getIDMax(ids, "fireDamage") / 100 + getIDMax(ids, "fireSpellDamage") / 100;
+    const fRaw = getIDMax(ids, "rawFireDamage") + getIDMax(ids, "rawFireSpellDamage");
+    const aPct = getIDMax(ids, "airDamage") / 100 + getIDMax(ids, "airSpellDamage") / 100;
+    const aRaw = getIDMax(ids, "rawAirDamage") + getIDMax(ids, "rawAirSpellDamage");
+    const elePct = getIDMax(ids, "elementalDamage") / 100 + getIDMax(ids, "elementalSpellDamage") / 100;
+    const eleRaw = getIDMax(ids, "rawElementalDamage") + getIDMax(ids, "rawElementalSpellDamage");
+
+    let minTotal = 0;
+    let maxTotal = 0;
+    let hasElemental = false;
+
+    let key: keyof Damage['damages'];
+    for (key in damage['damages']) {
+        let totalMod = 1 + spellPct;
+        let totalRawMod = 0;
+
+        if (key === "neutral") {
+            totalMod += nPct;
+            totalRawMod += nRaw;
+        }
+        else {
+            hasElemental = true;
+            totalMod += elePct;
+            if (key === "earth") {
+                totalMod += ePct;
+                totalRawMod += eRaw;
+            }
+            else if (key === "thunder") {
+                totalMod += tPct;
+                totalRawMod += tRaw;
+            }
+            else if (key === "water") {
+                totalMod += wPct;
+                totalRawMod += wRaw;
+            }
+            else if (key === "fire") {
+                totalMod += fPct;
+                totalRawMod += fRaw;
+            }
+            else if (key === "air") {
+                totalMod += aPct;
+                totalRawMod += aRaw;
+            }
+        }
+
+        const newMinDmg = ((damage["damages"][key]['min'] * damage["baseAtkMult"] * totalMod) + totalRawMod)
+        const newMaxDmg = ((damage["damages"][key]['max'] * damage["baseAtkMult"] * totalMod) + totalRawMod)
+
+        minTotal += newMinDmg >= 0 ? newMinDmg : 0;
+        maxTotal += newMaxDmg >= 0 ? newMaxDmg : 0;
+    }
+
+    minTotal += spellRaw + (hasElemental ? eleRaw : 0);
+    maxTotal += spellRaw + (hasElemental ? eleRaw : 0);
+
+    return Math.max((minTotal + maxTotal) / 2, 0);
 }
 
-export const calcMeleeDamage = () => {
+// Returns melee DPS.
+export const calcMeleeDamage = (damage: Damage, ids: IDs) => {
+    const meleePct = getIDMax(ids, "mainAttackDamage") / 100;
+    const meleeRaw = getIDMax(ids, "rawMainAttackDamage");
 
+    const nPct = getIDMax(ids, "neutralDamage") / 100 + getIDMax(ids, "neutralMainAttackDamage") / 100;
+    const nRaw = getIDMax(ids, "rawNeutralDamage") + getIDMax(ids, "rawNeutralMainAttackDamage");
+    const ePct = getIDMax(ids, "earthDamage") / 100 + getIDMax(ids, "earthMainAttackDamage") / 100;
+    const eRaw = getIDMax(ids, "rawEarthDamage") + getIDMax(ids, "rawEarthMainAttackDamage");
+    const tPct = getIDMax(ids, "thunderDamage") / 100 + getIDMax(ids, "thunderMainAttackDamage") / 100;
+    const tRaw = getIDMax(ids, "rawThunderDamage") + getIDMax(ids, "rawThunderMainAttackDamage");
+    const wPct = getIDMax(ids, "waterDamage") / 100 + getIDMax(ids, "waterMainAttackDamage") / 100;
+    const wRaw = getIDMax(ids, "rawWaterDamage") + getIDMax(ids, "rawWaterMainAttackDamage");
+    const fPct = getIDMax(ids, "fireDamage") / 100 + getIDMax(ids, "fireMainAttackDamage") / 100;
+    const fRaw = getIDMax(ids, "rawFireDamage") + getIDMax(ids, "rawFireMainAttackDamage");
+    const aPct = getIDMax(ids, "airDamage") / 100 + getIDMax(ids, "airMainAttackDamage") / 100;
+    const aRaw = getIDMax(ids, "rawAirDamage") + getIDMax(ids, "rawAirMainAttackDamage");
+    const elePct = getIDMax(ids, "elementalDamage") / 100 + getIDMax(ids, "elementalMainAttackDamage") / 100;
+    const eleRaw = getIDMax(ids, "rawElementalDamage") + getIDMax(ids, "rawElementalMainAttackDamage");
+
+    const attackSpeeds: number[] = [0.51, 0.83, 1.5, 2.05, 2.5, 3.1, 4.3];
+    let curIndex = attackSpeeds.indexOf(damage['baseAtkMult']);
+    curIndex += getIDMax(ids, "rawAttackSpeed");
+    let newAtkMult = 0;
+
+    if (curIndex < 0) {
+        newAtkMult = 0.51;
+    }
+    else if (curIndex > attackSpeeds.length - 1) {
+        newAtkMult = 4.3;
+    }
+    else {
+        newAtkMult = attackSpeeds[curIndex];
+    }
+
+    let minTotal = 0;
+    let maxTotal = 0;
+    let hasElemental = false;
+
+    let key: keyof Damage['damages'];
+    for (key in damage['damages']) {
+        let totalMod = 1 + meleePct;
+        let totalRawMod = 0;
+
+        if (key === "neutral") {
+            totalMod += nPct;
+            totalRawMod += nRaw;
+        }
+        else {
+            hasElemental = true;
+            totalMod += elePct;
+            if (key === "earth") {
+                totalMod += ePct;
+                totalRawMod += eRaw;
+            }
+            else if (key === "thunder") {
+                totalMod += tPct;
+                totalRawMod += tRaw;
+            }
+            else if (key === "water") {
+                totalMod += wPct;
+                totalRawMod += wRaw;
+            }
+            else if (key === "fire") {
+                totalMod += fPct;
+                totalRawMod += fRaw;
+            }
+            else if (key === "air") {
+                totalMod += aPct;
+                totalRawMod += aRaw;
+            }
+        }
+
+        const newMinDmg = ((damage["damages"][key]['min'] * totalMod) + totalRawMod)
+        const newMaxDmg = ((damage["damages"][key]['max'] * totalMod) + totalRawMod)
+
+        minTotal += newMinDmg >= 0 ? newMinDmg : 0;
+        maxTotal += newMaxDmg >= 0 ? newMaxDmg : 0;
+    }
+
+    minTotal += (meleeRaw + (hasElemental ? eleRaw : 0));
+    maxTotal += (meleeRaw + (hasElemental ? eleRaw : 0));
+
+    minTotal *= newAtkMult;
+    maxTotal *= newAtkMult;
+
+    return Math.max((minTotal + maxTotal) / 2, 0);
 }
 
-export const calcPoisonDamage = () => {
-
+// Returns poison DPS.
+export const calcPoisonDamage = (ids: IDs): number => {
+    return getIDMax(ids, "poison") / 3;
 }
 
 const accumulateIDs = () => {
@@ -145,7 +299,7 @@ export const getManaIndex = () => {
 }
 
 export const getLifeIndex = () => {
-    
+
 }
 
 export const getIndices = (weapon: Item, powdering: string, gear: Item, steals: boolean, cps: number, spellCycle: string) => {
@@ -188,6 +342,11 @@ export const testIndices = (weapon: Item, powdering: string, gear: Item, steals:
     console.log("Fire Damage on Armor: " + getIDMax(gear['identifications'], 'fireDamage'))
     console.log("Life Steal on Weapon: " + getIDMax(weapon['identifications'], 'lifeSteal'))
     console.log("Life Steal on Armor: " + getIDMax(gear['identifications'], 'lifeSteal'))
+
+    console.log("========== GET SPELL/MELEE/POISON DAMAGE ==========");
+    console.log("Spell: " + calcSpellDamage(powderedDamage, weapon['identifications']));
+    console.log("Melee: " + calcMeleeDamage(powderedDamage, weapon['identifications']));
+    console.log("Poison: " + calcPoisonDamage(weapon['identifications']));
 
     console.log("========== CALCULATE SPELL INDEX ==========");
     console.log("========== CALCULATE MELEE INDEX ==========");
