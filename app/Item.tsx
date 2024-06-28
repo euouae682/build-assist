@@ -1,4 +1,5 @@
 type ItemProps = {
+    level: number,
     name: string,
     rarity: string,
     spell: number,
@@ -35,7 +36,7 @@ export default function Item(props: ItemProps) {
 
     return (
       <div className="m-2 flex">
-        <p style={{color: getRarityColor(props.rarity)}} className="w-64">{ props.name }</p>
+        <p style={{color: getRarityColor(props.rarity)}} className="w-64">Lv. {props.level} { props.name }</p>
         <p className="w-32">{ props.spell }</p>
         <p className="w-32">{ props.melee }</p>
         <p className="w-32">{ props.poison }</p>
