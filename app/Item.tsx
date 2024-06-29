@@ -5,8 +5,7 @@ type ItemProps = {
     spell: number,
     melee: number,
     poison: number,
-    mana: number,
-    life: number
+    mana: number
 }
 
 export default function Item(props: ItemProps) {
@@ -41,7 +40,6 @@ export default function Item(props: ItemProps) {
         <p className="w-32">{ props.melee.toFixed(2) }</p>
         <p className="w-32">{ props.poison.toFixed(2) }</p>
         <p className="w-32">{ props.mana.toFixed(2) }</p>
-        <p className="w-32">{ props.life.toFixed(2) }</p>
       </div>
     );
   }

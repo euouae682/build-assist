@@ -1,4 +1,4 @@
-import { POWDERS, ATK_MULTIPLIERS, Powder } from "./constants";
+import { POWDERS, ATK_MULTIPLIERS, SPELL_COSTS, Powder } from "./constants";
 import { Item, ItemList, Damage, IDs, Indices } from "./page";
 
 // Get the base damages/base attack speed of a weapon
@@ -278,6 +278,28 @@ export const calcPoisonDamage = (ids: IDs): number => {
     return Math.max(getIDMax(ids, "poison") / 3, 0);
 }
 
+// Returns the mana saved per spell cycle.
+export const calcManaSustain = (ids: IDs, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number]): number => {
+    // TODO: make it so it doesnt assume slowest attack speed
+    // TODO: add melee into spell cycle
+    // TODO: fix hybrid/stealing functionality to include delayed clicks in spell cycle
+    const spellCycleClicks = spellCycle.length * 3;
+    const spellCycleLength = spellCycleClicks / cps; // Length of entire spell cycle in seconds
+
+    const manaRegenPerSecond = getIDMax(ids, "manaRegen") / 5;
+    const manaStealPerSecond = steals ? getIDMax(ids, "manaSteal") / 3 : 0;
+
+    const firstSaved = (-1 * getIDMax(ids, "raw1stSpellCost") * (spellCycle.match(/1/g)||[]).length);
+    const firstSavedPct = (-1 * Math.max(getIDMax(ids, "1stSpellCost"), -100) / 100 * (costs[0] + getIDMax(ids, "raw1stSpellCost")) * (spellCycle.match(/1/g)||[]).length);
+    const secondSaved = (-1 * getIDMax(ids, "raw2ndSpellCost") * (spellCycle.match(/2/g)||[]).length);
+    const secondSavedPct = (-1 * Math.max(getIDMax(ids, "2ndSpellCost"), -100) / 100 * (costs[1] + getIDMax(ids, "raw2ndSpellCost")) * (spellCycle.match(/2/g)||[]).length);
+    const thirdSaved = (-1 * getIDMax(ids, "raw3rdSpellCost") * (spellCycle.match(/3/g)||[]).length);
+    const thirdSavedPct = (-1 * Math.max(getIDMax(ids, "3rdSpellCost"), -100) / 100 * (costs[2] + getIDMax(ids, "raw3rdSpellCost")) * (spellCycle.match(/3/g)||[]).length);
+    const fourthSaved = (-1 * getIDMax(ids, "raw4thSpellCost") * (spellCycle.match(/4/g)||[]).length);
+    const fourthSavedPct = (-1 * Math.max(getIDMax(ids, "4thSpellCost"), -100) / 100 * (costs[3] + getIDMax(ids, "raw4thSpellCost")) * (spellCycle.match(/4/g)||[]).length);
+    return manaRegenPerSecond + manaStealPerSecond + ((firstSaved + firstSavedPct + secondSaved + secondSavedPct + thirdSaved + thirdSavedPct + fourthSaved + fourthSavedPct) / spellCycleLength);
+}
+
 const accumulateIDs = (weaponIDs: IDs, gearIDs: IDs): IDs => {
     let newIDs = structuredClone(weaponIDs);
     let key: keyof IDs;
@@ -314,15 +336,11 @@ export const getPoisonIndex = (weaponIDs: IDs, accumulatedIDs: IDs): number => {
     return calcPoisonDamage(accumulatedIDs) - calcPoisonDamage(weaponIDs);
 }
 
-export const getManaIndex = () => {
-    return 0;
+export const getManaIndex = (weaponIDs: IDs, accumulatedIDs: IDs, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number]): number => {
+    return calcManaSustain(accumulatedIDs, steals, cps, spellCycle, costs) - calcManaSustain(weaponIDs, steals, cps, spellCycle, costs);
 }
 
-export const getLifeIndex = () => {
-    return 0;
-}
-
-export const getIndices = (weapon: Item, powdering: string, gearName: string, gear: Item, steals: boolean, cps: number, spellCycle: string): Indices => {
+export const getIndices = (weapon: Item, powdering: string, gearName: string, gear: Item, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
     const powdersToApply: Powder[] = compressPowders(powdering);
     const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
@@ -336,61 +354,6 @@ export const getIndices = (weapon: Item, powdering: string, gearName: string, ge
         spell: getSpellIndex(powderedDamage, weaponIDs, accumulatedIDs),
         melee: getMeleeIndex(powderedDamage, weaponIDs, accumulatedIDs),
         poison: getPoisonIndex(weaponIDs, accumulatedIDs),
-        mana: getManaIndex(),
-        life: getLifeIndex()
+        mana: getManaIndex(weaponIDs, accumulatedIDs, steals, cps, spellCycle, costs),
     };
-}
-
-export const testIndices = (weapon: Item, powdering: string, gear: Item, steals: boolean, cps: number, spellCycle: string) => {
-    console.log("========== PARAMETERS ==========");
-    console.log("Weapon: " + JSON.stringify(weapon));
-    console.log("Powdering: " + powdering);
-    console.log("Gear: " + JSON.stringify(gear));
-    console.log("Steals: " + steals);
-    console.log("CPS: " + cps);
-    console.log("Spell Cycle: " + spellCycle);
-
-    const baseDamage: Damage = getDamages(weapon);
-
-    console.log("========== GET WEAPON DAMAGE ==========");
-    console.log("Base Damage: " + JSON.stringify(baseDamage));
-
-    const powdersToApply: Powder[] = compressPowders(powdering);
-
-    console.log("========== COMPRESS POWDERS ==========");
-    console.log("Powdering: " + powdering);
-    console.log("Powder Array: " + JSON.stringify(powdersToApply));
-
-    const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
-
-    console.log("========== APPLY POWDERS ==========");
-    console.log("After Powder Damage: " + JSON.stringify(powderedDamage));
-    
-    console.log("========== GET BASE DPS ==========");
-    console.log("Base DPS (Unpowdered): " + getBaseDPS(baseDamage));
-    console.log("Base DPS (Powdered): " + getBaseDPS(powderedDamage));
-
-    console.log("========== GET ID MAX ==========");
-    console.log("Mana Regen on Weapon: " + getIDMax(weapon['identifications'], 'manaRegen'))
-    console.log("Mana Regen on Armor: " + getIDMax(gear['identifications'], 'manaRegen'))
-    console.log("Fire Damage on Weapon: " + getIDMax(weapon['identifications'], 'fireDamage'))
-    console.log("Fire Damage on Armor: " + getIDMax(gear['identifications'], 'fireDamage'))
-    console.log("Life Steal on Weapon: " + getIDMax(weapon['identifications'], 'lifeSteal'))
-    console.log("Life Steal on Armor: " + getIDMax(gear['identifications'], 'lifeSteal'))
-
-    console.log("========== GET SPELL/MELEE/POISON DAMAGE ==========");
-    console.log("Spell: " + calcSpellDamage(powderedDamage, weapon['identifications']));
-    console.log("Melee: " + calcMeleeDamage(powderedDamage, weapon['identifications']));
-    console.log("Poison: " + calcPoisonDamage(weapon['identifications']));
-
-    console.log("========== ACCUMULATE IDS ==========")
-    console.log("IDs of Weapon: " + JSON.stringify(weapon['identifications']));
-    console.log("IDs of Gear: " + JSON.stringify(gear['identifications']));
-    console.log("Accumulated IDs: " + JSON.stringify(accumulateIDs(weapon['identifications'], gear['identifications'])));
-
-    console.log("========== CALCULATE SPELL INDEX ==========");
-    console.log("========== CALCULATE MELEE INDEX ==========");
-    console.log("========== CALCULATE POISON INDEX ==========");
-    console.log("========== CALCULATE MANA SUSTAIN INDEX ==========");
-    console.log("========== CALCULATE LIFE SUSTAIN INDEX ==========");
 }
