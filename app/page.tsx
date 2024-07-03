@@ -86,6 +86,8 @@ export default function Home() {
   const [powderSlots, setPowderSlots] = useState(0);
   const [powdering, setPowdering] = useState('');
   const [gearType, setGearType] = useState('');
+  const [sp, setSp] = useState<[boolean, boolean, boolean, boolean, boolean]>([false, false, false, false, false]);
+  const [levelReq, setLevelReq] = useState(105);
 
   // Form state variables - CPS/Steals
   const [useSteals, setUseSteals] = useState(true);
@@ -110,6 +112,52 @@ export default function Home() {
     getItems();
   }, [])
 
+  useEffect(() => {
+    if (itemsList !== null) {
+      setGearList(Object.entries(itemsList)
+        .filter((item) => {
+          if (gearType === 'all') {
+            return ('type' in item[1] && (item[1]['type'] === 'helmet' 
+              || item[1]['type'] === 'chestplate' 
+              || item[1]['type'] === 'leggings' 
+              || item[1]['type'] === 'boots')) || ('accessoryType' in item[1]);
+          }
+          else if (gearType === 'armor') {
+            return 'type' in item[1] && (item[1]['type'] === 'helmet' 
+              || item[1]['type'] === 'chestplate' 
+              || item[1]['type'] === 'leggings' 
+              || item[1]['type'] === 'boots');
+          }
+          else if (gearType === 'accessories') {
+            return 'accessoryType' in item[1];
+          }
+          return ('type' in item[1] && item[1]['type'] === gearType) || ('accessoryType' in item[1] && item[1]['accessoryType'] === gearType);
+        })
+        .filter((item) => {
+          if (item[1]['requirements']['level'] > levelReq) {
+            return false;
+          }
+          if (sp[0] && 'strength' in item[1]['requirements']) {
+            return false;
+          }
+          if (sp[1] && 'dexterity' in item[1]['requirements']) {
+            return false;
+          }
+          if (sp[2] && 'intelligence' in item[1]['requirements']) {
+            return false;
+          }
+          if (sp[3] && 'defence' in item[1]['requirements']) {
+            return false;
+          }
+          if (sp[4] && 'agility' in item[1]['requirements']) {
+            return false;
+          }
+          return true;
+        })
+        .map((item) => item[0]));
+    }
+  }, [itemsList, gearType, sp, levelReq])
+
   async function getItems() {
     const response = await fetch('./data.json');
     const json: ItemList = await response.json();
@@ -121,15 +169,8 @@ export default function Home() {
       setWeaponsList(Object.entries(itemsList)
         .filter((item) => 'type' in item[1] && item[1]['type'] === type)
         .map((item) => item[0])
-        .sort());
-    }
-  }
-
-  const filterGear = (type: string): void => {
-    if (itemsList !== null) {
-      setGearList(Object.entries(itemsList)
-        .filter((item) => ('type' in item[1] && item[1]['type'] === type) || ('accessoryType' in item[1] && item[1]['accessoryType'] === type))
-        .map((item) => item[0]));
+        .sort()
+      );
     }
   }
 
@@ -158,7 +199,7 @@ export default function Home() {
     if (sortBy === "spell" || sortBy === "melee" || sortBy === "poison" || sortBy === "mana") {
       sortList(indicesList, sortBy);
     }
-    setIndices(indicesList);
+    setIndices(indicesList.slice(0, 99));
   }
 
   const sortList = (list: Indices[], key: "spell" | "melee" | "poison" | "mana"): Indices[] => {
@@ -185,7 +226,7 @@ export default function Home() {
 
   const onGearChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     setGearType(e.target.value);
-    filterGear(e.target.value);
+    // filterGear(e.target.value);
   }
 
   const onPlaystyleChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
@@ -205,6 +246,16 @@ export default function Home() {
     setSpellCycle(e.target.value);
   }
 
+  const onSpChange = (e: React.ChangeEvent<HTMLInputElement>, toExclude: number): void => {
+    let newSp: [boolean, boolean, boolean, boolean, boolean] = [...sp];
+    newSp[toExclude] = e.target.checked;
+    setSp(newSp);
+  }
+
+  const onLevelChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setLevelReq(e.target.valueAsNumber);
+  }
+
   const onCostsChange = (e: React.ChangeEvent<HTMLInputElement>, spell: number): void => {
     let newCosts: [number, number, number, number] = [...costs];
     newCosts[spell] = e.target.valueAsNumber;
@@ -216,7 +267,7 @@ export default function Home() {
   }
 
   const onFormSubmit = (e: React.FormEvent): void => {
-    e.preventDefault();
+    e.preventDefault();  
 
     if (weapon === '') {
       alert("Warning: Weapon not selected!");
@@ -239,26 +290,48 @@ export default function Home() {
   }
 
   return (
-    <main className="m-16 flex flex-col gap-10">
+    <main className="m-16 flex flex-col gap-10 w-8/12">
       <div>
         <h1 className="text-3xl font-bold leading-12">Wynncraft Build Assist</h1>
         <h2 className="text-2xl">a goofy web app by euouae</h2>
         <p className="text-slate-400 mt-2 hover:text-slate-600 cursor-pointer transition w-44" onClick={() => setShowInfo(!showInfo)}>What am I looking at?</p>
         {
           showInfo ? <p>
-            placeholder
+            This is a tool meant to assist builders by assigning “indices” to gear. These indices correspond to various metrics including damage stats, defensive stats, and mana while taking aspects such as weapon choice and spell cycle into account.The indices provided by this tool are usually a general estimate, and DO NOT precisely represent the actual offensive or defensive potential of the gear (for more info on this, see the “How are indices calculated?” section).<br/><br/>Therefore, this tool should NOT be used as:
+            <ul>
+              <li className="indent-8">- A damage/EHP calculator (use WynnBuilder instead)</li>
+              <li className="indent-8">- A way to check if a build has enough mana (use WynnMana instead)</li>
+              <li className="indent-8">- An item database (use WynnAtlas instead)</li>
+            </ul>
+            Instead, this tool is meant as a means to compare different pieces of gear with each other.<br/><br/>
           </p> : <></>
         }
         <p className="text-slate-400 hover:text-slate-600 cursor-pointer transition w-56" onClick={() => setShowCalcs(!showCalcs)}>How are indices calculated?</p>
         {
           showCalcs ? <p>
-            placeholder
+            <ul>
+              <li className="indent-8">- Spell index: The spell index is the damage increase of a theoretical spell which has 100% neutral spell conversion as a result of equipping an item.</li>
+              <li className="indent-8">- Melee index: The melee index is the increase in melee DPS as a result of equipping an item.</li>
+              <li className="indent-8">- Poison index: The poison index is the increase in poison DPS as a result of equipping an item.</li>
+              <li className="indent-8">- Mana index: The mana index is the approximate mana value saved per second as a result of equipping an item.</li>
+              {/* <li className="indent-8">- Skill point index:</li>
+              <li className="indent-8">- Health index:</li>
+              <li className="indent-8">- Health sustain index:</li>
+              <li className="indent-8">- Walkspeed index:</li> */}
+            </ul>
+            Indices are meant to be easily calculated, and generalisable to a class’ various archetypes/playstyles. For this reason, they exclude specific aspects of the damage calculation process, introducing inaccuracies. Index calculations exclude:
+            <ul>
+              <li className="indent-8">- Spell conversions (spell indices are calculated assuming conversion is 100% neutral)</li>
+              <li className="indent-8">- Major IDs</li>
+              <li className="indent-8">- Abilities (indices are calculated assuming no playstyle-altering nodes are unlocked)</li>
+              <li className="indent-8">- Skill point damage bonuses</li>
+            </ul>
           </p> : <></>
         }
       </div>
       <form className="flex flex-col gap-2 w-96" onSubmit={onFormSubmit}>
+        <h2 className="text-xl font-bold">Class/Weapon</h2>
         <div>
-          <h2 className="text-xl font-bold">Class/Weapons</h2>
           <label htmlFor="cla">Class: </label>
           <select id="cla" name="cla" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" defaultValue="default" onChange={onClassChange}>
             <option disabled value="default"> -- select an option -- </option>
@@ -284,22 +357,9 @@ export default function Home() {
         <div className={powderSlots === 0 ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="pwd">Powdering: </label>
           <input type="text" id="pwd" name="pwd" className="bg-slate-200 rounded-md p-1 transition" pattern={"([etwfa][1-6]){" + powderSlots + "}"} placeholder={powderSlots + " slots"} value={powdering} onChange={onPowderingChange} />
-        </div>
-
-        <div>
-          <label htmlFor="wpn">Gear: </label>
-          <select id="wpn" name="wpn" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onGearChange} defaultValue="default">
-            <option disabled value="default"> -- select an option -- </option>
-            <option value="helmet">Helmet</option>
-            <option value="chestplate">Chestplate</option>
-            <option value="leggings">Leggings</option>
-            <option value="boots">Boots</option>
-            <option value="ring">Ring</option>
-            <option value="bracelet">Bracelet</option>
-            <option value="necklace">Necklace</option>
-          </select>
         </div> 
 
+        <h2 className="text-xl font-bold">Playstyle</h2>
         <div>
           <label htmlFor="playstyle">Playstyle: </label>
           <select id="playstyle" name="playstyle" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onPlaystyleChange}>
@@ -327,6 +387,43 @@ export default function Home() {
           <input className="w-48" type="range" id="cost3" name="cost3" min="1" max="100" value={costs[2]} onChange={(e) => onCostsChange(e, 2)} /><br/>
           <label htmlFor="cost4">4th Spell Cost: {costs[3]} </label>
           <input className="w-48" type="range" id="cost4" name="cost4" min="1" max="100" value={costs[3]} onChange={(e) => onCostsChange(e, 3)} /><br/>
+        </div>
+
+        <h2 className="text-xl font-bold">Filters</h2>
+        <div>
+          <label htmlFor="wpn">Gear: </label>
+          <select id="wpn" name="wpn" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onGearChange} defaultValue="default">
+            <option disabled value="default"> -- select an option -- </option>
+            <option value="all">All</option>
+            <option value="armor">Armor</option>
+            <option value="accessories">Accessories</option>
+            <option value="helmet">Helmet</option>
+            <option value="chestplate">Chestplate</option>
+            <option value="leggings">Leggings</option>
+            <option value="boots">Boots</option>
+            <option value="ring">Ring</option>
+            <option value="bracelet">Bracelet</option>
+            <option value="necklace">Necklace</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="playstyle">Exclude Skill Points: </label> <br/>
+          <label htmlFor="str">Strength: </label>
+          <input type="checkbox" id="str" name="str" checked={sp[0]} onChange={(e) => onSpChange(e, 0)} /><br/>
+          <label htmlFor="dex">Dexterity: </label>
+          <input type="checkbox" id="dex" name="dex" checked={sp[1]} onChange={(e) => onSpChange(e, 1)} /><br/>
+          <label htmlFor="int">Intelligence: </label>
+          <input type="checkbox" id="int" name="int" checked={sp[2]} onChange={(e) => onSpChange(e, 2)} /><br/>
+          <label htmlFor="def">Defense: </label>
+          <input type="checkbox" id="def" name="def" checked={sp[3]} onChange={(e) => onSpChange(e, 3)} /><br/>
+          <label htmlFor="agi">Agility: </label>
+          <input type="checkbox" id="agi" name="agi" checked={sp[4]} onChange={(e) => onSpChange(e, 4)} />
+        </div>
+
+        <div>
+          <label htmlFor="level">Max Level: </label>
+          <input type="number" id="level" name="level" className="bg-slate-200 rounded-md p-1 transition w-16" onChange={onLevelChange} />
         </div>
 
         <div>
