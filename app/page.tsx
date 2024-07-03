@@ -1,7 +1,16 @@
 'use client';
 
+// TODO: add filters for combat level/skill point reqs
+// TODO: add health index
+// TODO: add hp sustain index (if includes postiive health regen %, list index as just above 0)
+// TODO: add walkspeed index
+// TODO: add other index/section
+// TODO: add xp/lb index
+// TODO: add warnings for percent health regen
+// TODO: add warnings for rollable hp
 // TODO: add `how are indices calculated`?
 // TODO: add credits/resources
+// TODO: add skill point index
 // TODO: add limitations section (This app is by NO MEANS a concrete representation of what items are best for your build,
 //       and should NOT be used as the sole source of decisionmaking for builds. It only serves to give a GENERAL idea of 
 //       what gear would be effective for a weapon).
@@ -64,30 +73,36 @@ export type Indices = {
   level: number,
   name: string,
   rarity: string,
-  spell: number,
-  melee: number,
-  poison: number,
-  mana: number,
+  spell: [number],
+  melee: [number, string],
+  poison: [number, string],
+  mana: [number, string],
 }
 
 export default function Home() {
+  // Form state variables - general
   const [weaponType, setWeaponType] = useState('');
   const [weapon, setWeapon] = useState('');
   const [powderSlots, setPowderSlots] = useState(0);
   const [powdering, setPowdering] = useState('');
   const [gearType, setGearType] = useState('');
 
+  // Form state variables - CPS/Steals
   const [useSteals, setUseSteals] = useState(true);
   const [cps, setCps] = useState(0);
   const [spellCycle, setSpellCycle] = useState('');
   const [costs, setCosts] = useState<[number, number, number, number]>([35, 20, 35, 30]);
+
+  // Form state variables - Sort by
   const [sortBy, setSortBy] = useState('spell');
 
+  // Data state variables
   const [itemsList, setItemsList] = useState<ItemList | null>(null);
   const [weaponsList, setWeaponsList] = useState<string[] | null>(null);
   const [gearList, setGearList] = useState<string[] | null>(null);
   const [indices, setIndices] = useState<Indices[] | null>(null);
 
+  // Aesthetic state variables
   const [showInfo, setShowInfo] = useState(false);
   const [showCalcs, setShowCalcs] = useState(false);
 
@@ -148,7 +163,7 @@ export default function Home() {
 
   const sortList = (list: Indices[], key: "spell" | "melee" | "poison" | "mana"): Indices[] => {
     if (list !== null) {
-      return list.sort((index1, index2) => index2[key] - index1[key]);
+      return list.sort((index1, index2) => index2[key][0] - index1[key][0]);
     }
     return [];
   }
@@ -341,13 +356,7 @@ export default function Home() {
             indices ? indices.map((index) => {
               return <Item 
                 key={index.name}
-                level={index.level} 
-                name={index.name} 
-                rarity={index.rarity} 
-                spell={index.spell} 
-                melee={index.melee}
-                poison={index.poison}
-                mana={index.mana} />
+                index={index} />
             }) : <></>
           }
         </div>

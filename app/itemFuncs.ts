@@ -324,20 +324,33 @@ const accumulateIDs = (weaponIDs: IDs, gearIDs: IDs): IDs => {
     return newIDs;
 }
 
-export const getSpellIndex = (damage: Damage, weaponIDs: IDs, accumulatedIDs: IDs): number => {
-    return calcSpellDamage(damage, accumulatedIDs) - calcSpellDamage(damage, weaponIDs);
+export const getSpellIndex = (damage: Damage, weaponIDs: IDs, accumulatedIDs: IDs): [number] => {
+    return [calcSpellDamage(damage, accumulatedIDs) - calcSpellDamage(damage, weaponIDs)];
 }
 
-export const getMeleeIndex = (damage: Damage, weaponIDs: IDs, accumulatedIDs: IDs): number => {
-    return calcMeleeDamage(damage, accumulatedIDs) - calcMeleeDamage(damage, weaponIDs);
+export const getMeleeIndex = (damage: Damage, weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs): [number, string] => {
+    const extraTiers = getIDMax(gearIDs, "rawAttackSpeed");
+    let note = "";
+    if (extraTiers > 0) {
+        note = "ts";
+    }
+    else if (extraTiers < 0) {
+        note = "td";
+    }
+    return [calcMeleeDamage(damage, accumulatedIDs) - calcMeleeDamage(damage, weaponIDs), note];
 }
 
-export const getPoisonIndex = (weaponIDs: IDs, accumulatedIDs: IDs): number => {
-    return calcPoisonDamage(accumulatedIDs) - calcPoisonDamage(weaponIDs);
+export const getPoisonIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs): [number, string] => {
+    const poisonID = getIDMax(gearIDs, "poison");
+    return [calcPoisonDamage(accumulatedIDs) - calcPoisonDamage(weaponIDs), poisonID < 0 ? "neg" : ""];
 }
 
-export const getManaIndex = (weaponIDs: IDs, accumulatedIDs: IDs, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number]): number => {
-    return calcManaSustain(accumulatedIDs, steals, cps, spellCycle, costs) - calcManaSustain(weaponIDs, steals, cps, spellCycle, costs);
+export const getManaIndex = (weaponIDs: IDs, gearIDs: IDs,  accumulatedIDs: IDs, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number]): [number, string] => {
+    const [pct1, pct2, pct3, pct4] = [getIDMax(gearIDs, "1stSpellCost"), getIDMax(gearIDs, "2ndSpellCost"), getIDMax(gearIDs, "3rdSpellCost"), getIDMax(gearIDs, "4thSpellCost"),]
+    return [
+        calcManaSustain(accumulatedIDs, steals, cps, spellCycle, costs) - calcManaSustain(weaponIDs, steals, cps, spellCycle, costs), 
+        pct1 !== 0 || pct2 !== 0 || pct3 !== 0 || pct4 !== 0 ? "pct" : ""
+    ];
 }
 
 export const getIndices = (weapon: Item, powdering: string, gearName: string, gear: Item, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number]): Indices => {
@@ -345,15 +358,16 @@ export const getIndices = (weapon: Item, powdering: string, gearName: string, ge
     const powdersToApply: Powder[] = compressPowders(powdering);
     const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
     const weaponIDs: IDs = weapon['identifications'] ? weapon['identifications'] : {};
-    const accumulatedIDs: IDs = accumulateIDs(weaponIDs, gear['identifications'] ? gear['identifications'] : {});
+    const gearIDs: IDs = gear['identifications'] ? gear['identifications'] : {};
+    const accumulatedIDs: IDs = accumulateIDs(weaponIDs, gearIDs ? gearIDs : {});
 
     return {
         level: gear['requirements']['level'],
         name: gearName,
         rarity: gear['tier'],
         spell: getSpellIndex(powderedDamage, weaponIDs, accumulatedIDs),
-        melee: getMeleeIndex(powderedDamage, weaponIDs, accumulatedIDs),
-        poison: getPoisonIndex(weaponIDs, accumulatedIDs),
-        mana: getManaIndex(weaponIDs, accumulatedIDs, steals, cps, spellCycle, costs),
+        melee: getMeleeIndex(powderedDamage, weaponIDs, gearIDs, accumulatedIDs),
+        poison: getPoisonIndex(weaponIDs, gearIDs, accumulatedIDs),
+        mana: getManaIndex(weaponIDs, gearIDs, accumulatedIDs, steals, cps, spellCycle, costs),
     };
 }
