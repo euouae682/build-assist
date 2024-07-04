@@ -8,12 +8,12 @@ const getDamages = (weapon: Item): Damage => {
         return {
             baseAtkMult: ATK_MULTIPLIERS[weapon["attackSpeed"]],
             damages: {
-                neutral: 'damage' in base ? base['damage'] : {'min': 0, 'max': 0},
-                earth: 'earthDamage' in base ? base['earthDamage'] : {'min': 0, 'max': 0},
-                thunder: 'thunderDamage' in base ? base['thunderDamage'] : {'min': 0, 'max': 0},
-                water: 'waterDamage' in base ? base['waterDamage'] : {'min': 0, 'max': 0},
-                fire: 'fireDamage' in base ? base['fireDamage'] : {'min': 0, 'max': 0},
-                air: 'airDamage' in base ? base['airDamage'] : {'min': 0, 'max': 0}
+                neutral: 'damage' in base && typeof base['damage'] !== "number" ? base['damage'] : {'min': 0, 'max': 0},
+                earth: 'earthDamage' in base && typeof base['earthDamage'] !== "number" ? base['earthDamage'] : {'min': 0, 'max': 0},
+                thunder: 'thunderDamage' in base && typeof base['thunderDamage'] !== "number" ? base['thunderDamage'] : {'min': 0, 'max': 0},
+                water: 'waterDamage' in base && typeof base['waterDamage'] !== "number" ? base['waterDamage'] : {'min': 0, 'max': 0},
+                fire: 'fireDamage' in base && typeof base['fireDamage'] !== "number" ? base['fireDamage'] : {'min': 0, 'max': 0},
+                air: 'airDamage' in base && typeof base['airDamage'] !== "number" ? base['airDamage'] : {'min': 0, 'max': 0}
             }
         }
     }
@@ -300,6 +300,14 @@ export const calcManaSustain = (ids: IDs, steals: boolean, cps: number, spellCyc
     return manaRegenPerSecond + manaStealPerSecond + ((firstSaved + firstSavedPct + secondSaved + secondSavedPct + thirdSaved + thirdSavedPct + fourthSaved + fourthSavedPct) / spellCycleLength);
 }
 
+export const calcLifeSustain = (ids: IDs, steals: boolean): number => {
+    const rawRegen = getIDMax(ids, "healthRegenRaw");
+    const pctRegen = getIDMax(ids, "healthRegen") / 100;
+    const totalRegen = rawRegen >= 0 ? rawRegen * (1 + pctRegen) : rawRegen * (Math.max(1 - pctRegen, 0));
+    const steal = steals ? getIDMax(ids, "lifeSteal") / 3 : 0
+    return totalRegen + steal;
+}
+
 const accumulateIDs = (weaponIDs: IDs, gearIDs: IDs): IDs => {
     let newIDs = structuredClone(weaponIDs);
     let key: keyof IDs;
@@ -353,7 +361,37 @@ export const getManaIndex = (weaponIDs: IDs, gearIDs: IDs,  accumulatedIDs: IDs,
     ];
 }
 
-export const getIndices = (weapon: Item, powdering: string, gearName: string, gear: Item, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number]): Indices => {
+export const getSPIndex = (gearIDs: IDs, sp: [boolean, boolean, boolean, boolean, boolean]): [number, string] => {
+    const str = sp[0] ? 0 : getIDMax(gearIDs, "rawStrength");
+    const dex = sp[1] ? 0 : getIDMax(gearIDs, "rawDexterity");
+    const int = sp[2] ? 0 : getIDMax(gearIDs, "rawIntelligence");
+    const def = sp[3] ? 0 : getIDMax(gearIDs, "rawDefence");
+    const agi = sp[4] ? 0 : getIDMax(gearIDs, "rawAgility");
+    const warning = (str < 0) || (dex < 0) || (int < 0) || (def < 0) || (agi < 0);
+    return [str + dex + int + def + agi, warning ? "neg" : ""];
+}
+
+export const getHealthIndex = (gear: Item, gearIDs: IDs): [number, string] => {
+    let baseHP = 0;
+    if (gear !== undefined && 'base' in gear) {
+        if (gear['base'] !== undefined && 'health' in gear['base']) {
+            baseHP = Number(gear['base']['health']);
+        }
+    }
+    const extraHP = getIDMax(gearIDs, 'rawHealth');
+    return [baseHP + extraHP, extraHP !== 0 ? "rol" : ""];
+}
+
+export const getLifeIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs, steals: boolean): [number, string] => {
+    const hrID = getIDMax(gearIDs, "healthRegen");
+    return [calcLifeSustain(accumulatedIDs, steals) - calcLifeSustain(weaponIDs, steals), hrID !== 0 ? "pct" : ""]
+}
+
+export const getWalkIndex = (gearIDs: IDs): [number] => {
+    return [getIDMax(gearIDs, "walkSpeed")];
+}
+
+export const getIndices = (weapon: Item, powdering: string, gearName: string, gear: Item, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
     const powdersToApply: Powder[] = compressPowders(powdering);
     const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
@@ -369,5 +407,9 @@ export const getIndices = (weapon: Item, powdering: string, gearName: string, ge
         melee: getMeleeIndex(powderedDamage, weaponIDs, gearIDs, accumulatedIDs),
         poison: getPoisonIndex(weaponIDs, gearIDs, accumulatedIDs),
         mana: getManaIndex(weaponIDs, gearIDs, accumulatedIDs, steals, cps, spellCycle, costs),
+        skillPoints: getSPIndex(gearIDs, sp),
+        health: getHealthIndex(gear, gearIDs),
+        life: getLifeIndex(weaponIDs, gearIDs, accumulatedIDs, steals),
+        walkspeed: getWalkIndex(gearIDs),
     };
 }

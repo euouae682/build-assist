@@ -1,6 +1,5 @@
 'use client';
 
-// TODO: add filters for combat level/skill point reqs
 // TODO: add health index
 // TODO: add hp sustain index (if includes postiive health regen %, list index as just above 0)
 // TODO: add walkspeed index
@@ -8,19 +7,7 @@
 // TODO: add xp/lb index
 // TODO: add warnings for percent health regen
 // TODO: add warnings for rollable hp
-// TODO: add `how are indices calculated`?
 // TODO: add credits/resources
-// TODO: add skill point index
-// TODO: add limitations section (This app is by NO MEANS a concrete representation of what items are best for your build,
-//       and should NOT be used as the sole source of decisionmaking for builds. It only serves to give a GENERAL idea of 
-//       what gear would be effective for a weapon).
-// This app does not consider:
-//     - Spell Conversions
-//     - Major IDs
-//     - Abilities/the Ability Tree
-//     - Skill point bonuses
-//     - Only looks at specific items in isolation (potential issue for Spell Cost, HPR, or cancelstack)
-//     - Other important aspects of builds, i.e. Walkspeed or Defensive stats
 
 import React, { useState, useEffect } from "react";
 import Item from "./Item";
@@ -43,7 +30,7 @@ export type Item = {
     [key: string]: {
       min: number,
       max: number
-    },
+    } | number,
   },
   requirements: {
     level: number
@@ -77,6 +64,10 @@ export type Indices = {
   melee: [number, string],
   poison: [number, string],
   mana: [number, string],
+  skillPoints: [number, string]
+  health: [number, string],
+  life: [number, string],
+  walkspeed: [number]
 }
 
 export default function Home() {
@@ -192,17 +183,19 @@ export default function Home() {
     let indicesList: Indices[] = [];
     if (itemsList != null && gearList != null) {
       gearList.map((gearName) => {
-        indicesList.push(getIndices(itemsList[weapon], powdering, gearName, itemsList[gearName], useSteals, cps, spellCycle, costs));
+        indicesList.push(getIndices(itemsList[weapon], powdering, gearName, itemsList[gearName], useSteals, cps, spellCycle, costs, sp));
       })
     }
 
-    if (sortBy === "spell" || sortBy === "melee" || sortBy === "poison" || sortBy === "mana") {
+    if (sortBy === "spell" || sortBy === "melee" || sortBy === "poison" 
+      || sortBy === "mana" || sortBy === "skillPoints" || sortBy === "health"
+      || sortBy === "life" || sortBy === "walkspeed") {
       sortList(indicesList, sortBy);
     }
     setIndices(indicesList.slice(0, 99));
   }
 
-  const sortList = (list: Indices[], key: "spell" | "melee" | "poison" | "mana"): Indices[] => {
+  const sortList = (list: Indices[], key: "spell" | "melee" | "poison" | "mana" | "skillPoints" | "health" | "life" | "walkspeed"): Indices[] => {
     if (list !== null) {
       return list.sort((index1, index2) => index2[key][0] - index1[key][0]);
     }
@@ -433,6 +426,10 @@ export default function Home() {
             <option value="melee">Melee Damage</option>
             <option value="poison">Poison</option>
             <option value="mana">Mana Sustain</option>
+            <option value="skillPoints">Skill Points</option>
+            <option value="health">Health</option>
+            <option value="life">Life Sustain</option>
+            <option value="walkspeed">Walkspeed</option>
           </select> 
         </div>
         
@@ -441,13 +438,17 @@ export default function Home() {
 
       <div>
         <h2 className="text-xl font-bold">Results</h2>
-        <div className="border border-slate-600 w-[800px]">
+        <div className="border border-slate-600 w-[1300px]">
           <div className="m-2 flex">
             <p className="w-64 font-bold">Name</p>
             <p className="w-32 font-bold">Spell</p>
             <p className="w-32 font-bold">Melee</p>
             <p className="w-32 font-bold">Poison</p>
-            <p className="w-32 font-bold">Mana Sustain</p>
+            <p className="w-32 font-bold">Mana</p>
+            <p className="w-32 font-bold">Skill Points</p>
+            <p className="w-32 font-bold">Health</p>
+            <p className="w-32 font-bold">Life Sustain</p>
+            <p className="w-32 font-bold">Walkspeed</p>
           </div>
           {
             indices ? indices.map((index) => {
