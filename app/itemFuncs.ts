@@ -115,8 +115,8 @@ const getIDMax = (ids: IDs, idName: string): number => {
 // Returns spell damage.
 // Specifically, returns the average damage of a theoretical spell with 100% neutral spell conversion.
 export const calcSpellDamage = (damage: Damage, ids: IDs) => {
-    const spellPct = getIDMax(ids, "spellDamage") / 100;
-    const spellRaw = getIDMax(ids, "rawSpellDamage");
+    const spellPct = getIDMax(ids, "damage") / 100 + getIDMax(ids, "spellDamage") / 100;
+    const spellRaw = getIDMax(ids, "rawDamage") + getIDMax(ids, "rawSpellDamage");
 
     const nPct = getIDMax(ids, "neutralDamage") / 100 + getIDMax(ids, "neutralSpellDamage") / 100;
     const nRaw = getIDMax(ids, "rawNeutralDamage") + getIDMax(ids, "rawNeutralSpellDamage");
@@ -186,8 +186,8 @@ export const calcSpellDamage = (damage: Damage, ids: IDs) => {
 
 // Returns melee DPS.
 export const calcMeleeDamage = (damage: Damage, ids: IDs) => {
-    const meleePct = getIDMax(ids, "mainAttackDamage") / 100;
-    const meleeRaw = getIDMax(ids, "rawMainAttackDamage");
+    const meleePct = getIDMax(ids, "damage") / 100 + getIDMax(ids, "mainAttackDamage") / 100;
+    const meleeRaw = getIDMax(ids, "rawDamage") + getIDMax(ids, "rawMainAttackDamage");
 
     const nPct = getIDMax(ids, "neutralDamage") / 100 + getIDMax(ids, "neutralMainAttackDamage") / 100;
     const nRaw = getIDMax(ids, "rawNeutralDamage") + getIDMax(ids, "rawNeutralMainAttackDamage");

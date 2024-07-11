@@ -1,14 +1,5 @@
 'use client';
 
-// TODO: add health index
-// TODO: add hp sustain index (if includes postiive health regen %, list index as just above 0)
-// TODO: add walkspeed index
-// TODO: add other index/section
-// TODO: add xp/lb index
-// TODO: add warnings for percent health regen
-// TODO: add warnings for rollable hp
-// TODO: add credits/resources
-
 import React, { useState, useEffect } from "react";
 import Item from "./Item";
 import { getIndices } from "./itemFuncs";
