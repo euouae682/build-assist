@@ -186,8 +186,8 @@ export const calcSpellDamage = (damage: Damage, ids: IDs) => {
 
 // Returns melee DPS.
 export const calcMeleeDamage = (damage: Damage, ids: IDs) => {
-    const meleePct = getIDMax(ids, "damage") / 100 + getIDMax(ids, "mainAttackDamage") / 100;
-    const meleeRaw = getIDMax(ids, "rawDamage") + getIDMax(ids, "rawMainAttackDamage");
+    const meleePct = getIDMax(ids, "damageBonus") / 100 + getIDMax(ids, "mainAttackDamage") / 100;
+    const meleeRaw = getIDMax(ids, "damageBonusRaw") + getIDMax(ids, "rawMainAttackDamage");
 
     const nPct = getIDMax(ids, "neutralDamage") / 100 + getIDMax(ids, "neutralMainAttackDamage") / 100;
     const nRaw = getIDMax(ids, "rawNeutralDamage") + getIDMax(ids, "rawNeutralMainAttackDamage");
