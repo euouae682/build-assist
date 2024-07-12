@@ -391,6 +391,15 @@ export const getWalkIndex = (gearIDs: IDs): [number] => {
     return [getIDMax(gearIDs, "walkSpeed")];
 }
 
+export const getMajorID = (gear: Item): [string] => {
+    const major = gear['majorIds'];
+    console.log(JSON.stringify(major));
+    if (major) {
+        return [major["name"]];
+    }
+    return [""]
+}
+
 export const getIndices = (weapon: Item, powdering: string, gearName: string, gear: Item, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
     const powdersToApply: Powder[] = compressPowders(powdering);
@@ -411,5 +420,6 @@ export const getIndices = (weapon: Item, powdering: string, gearName: string, ge
         health: getHealthIndex(gear, gearIDs),
         life: getLifeIndex(weaponIDs, gearIDs, accumulatedIDs, steals),
         walkspeed: getWalkIndex(gearIDs),
+        major: getMajorID(gear),
     };
 }

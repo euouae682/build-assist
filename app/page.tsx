@@ -17,6 +17,10 @@ export type Item = {
   powderSlots: number,
   type: string,
   attackSpeed: string,
+  majorIds?: {
+    name: string,
+    description: string
+  },
   base?: {
     [key: string]: {
       min: number,
@@ -58,7 +62,8 @@ export type Indices = {
   skillPoints: [number, string]
   health: [number, string],
   life: [number, string],
-  walkspeed: [number]
+  walkspeed: [number],
+  major: [string]
 }
 
 export default function Home() {
@@ -180,14 +185,17 @@ export default function Home() {
 
     if (sortBy === "spell" || sortBy === "melee" || sortBy === "poison" 
       || sortBy === "mana" || sortBy === "skillPoints" || sortBy === "health"
-      || sortBy === "life" || sortBy === "walkspeed") {
+      || sortBy === "life" || sortBy === "walkspeed" || sortBy === "major") {
       sortList(indicesList, sortBy);
     }
     setIndices(indicesList.slice(0, 99));
   }
 
-  const sortList = (list: Indices[], key: "spell" | "melee" | "poison" | "mana" | "skillPoints" | "health" | "life" | "walkspeed"): Indices[] => {
+  const sortList = (list: Indices[], key: "spell" | "melee" | "poison" | "mana" | "skillPoints" | "health" | "life" | "walkspeed" | "major"): Indices[] => {
     if (list !== null) {
+      if (key === "major") {
+        return list.sort((index1, index2) => index2["major"][0].localeCompare(index1["major"][0]))
+      }
       return list.sort((index1, index2) => index2[key][0] - index1[key][0]);
     }
     return [];
@@ -274,7 +282,7 @@ export default function Home() {
   }
 
   return (
-    <main className="m-16 flex flex-col gap-10 w-8/12">
+    <main className="m-16 flex flex-col gap-10">
       <div>
         <h1 className="text-3xl font-bold leading-12">Wynncraft Build Assist</h1>
         <h2 className="text-2xl">a goofy web app by euouae</h2>
@@ -421,6 +429,7 @@ export default function Home() {
             <option value="health">Health</option>
             <option value="life">Life Sustain</option>
             <option value="walkspeed">Walkspeed</option>
+            <option value="major">Major ID</option>
           </select> 
         </div>
         
@@ -429,7 +438,7 @@ export default function Home() {
 
       <div>
         <h2 className="text-xl font-bold">Results</h2>
-        <div className="border border-slate-600 w-[1300px]">
+        <div className="border border-slate-600">
           <div className="m-2 flex">
             <p className="w-64 font-bold">Name</p>
             <p className="w-32 font-bold">Spell</p>
@@ -440,11 +449,13 @@ export default function Home() {
             <p className="w-32 font-bold">Health</p>
             <p className="w-32 font-bold">Life Sustain</p>
             <p className="w-32 font-bold">Walkspeed</p>
+            <p className="w-64 font-bold">Major ID</p>
           </div>
           {
             indices ? indices.map((index) => {
               return <Item 
                 key={index.name}
+                toggleBg={indices.indexOf(index) % 2 === 1}
                 index={index} />
             }) : <></>
           }
