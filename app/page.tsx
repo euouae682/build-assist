@@ -1,27 +1,5 @@
 'use client';
 
-// TODO: add filters for combat level/skill point reqs
-// TODO: add health index
-// TODO: add hp sustain index (if includes postiive health regen %, list index as just above 0)
-// TODO: add walkspeed index
-// TODO: add other index/section
-// TODO: add xp/lb index
-// TODO: add warnings for percent health regen
-// TODO: add warnings for rollable hp
-// TODO: add `how are indices calculated`?
-// TODO: add credits/resources
-// TODO: add skill point index
-// TODO: add limitations section (This app is by NO MEANS a concrete representation of what items are best for your build,
-//       and should NOT be used as the sole source of decisionmaking for builds. It only serves to give a GENERAL idea of 
-//       what gear would be effective for a weapon).
-// This app does not consider:
-//     - Spell Conversions
-//     - Major IDs
-//     - Abilities/the Ability Tree
-//     - Skill point bonuses
-//     - Only looks at specific items in isolation (potential issue for Spell Cost, HPR, or cancelstack)
-//     - Other important aspects of builds, i.e. Walkspeed or Defensive stats
-
 import React, { useState, useEffect } from "react";
 import Item from "./Item";
 import { getIndices } from "./itemFuncs";
@@ -39,11 +17,15 @@ export type Item = {
   powderSlots: number,
   type: string,
   attackSpeed: string,
+  majorIds?: {
+    name: string,
+    description: string
+  },
   base?: {
     [key: string]: {
       min: number,
       max: number
-    },
+    } | number,
   },
   requirements: {
     level: number
@@ -77,6 +59,11 @@ export type Indices = {
   melee: [number, string],
   poison: [number, string],
   mana: [number, string],
+  skillPoints: [number, string]
+  health: [number, string],
+  life: [number, string],
+  walkspeed: [number],
+  major: [string]
 }
 
 export default function Home() {
@@ -192,18 +179,23 @@ export default function Home() {
     let indicesList: Indices[] = [];
     if (itemsList != null && gearList != null) {
       gearList.map((gearName) => {
-        indicesList.push(getIndices(itemsList[weapon], powdering, gearName, itemsList[gearName], useSteals, cps, spellCycle, costs));
+        indicesList.push(getIndices(itemsList[weapon], powdering, gearName, itemsList[gearName], useSteals, cps, spellCycle, costs, sp));
       })
     }
 
-    if (sortBy === "spell" || sortBy === "melee" || sortBy === "poison" || sortBy === "mana") {
+    if (sortBy === "spell" || sortBy === "melee" || sortBy === "poison" 
+      || sortBy === "mana" || sortBy === "skillPoints" || sortBy === "health"
+      || sortBy === "life" || sortBy === "walkspeed" || sortBy === "major") {
       sortList(indicesList, sortBy);
     }
     setIndices(indicesList.slice(0, 99));
   }
 
-  const sortList = (list: Indices[], key: "spell" | "melee" | "poison" | "mana"): Indices[] => {
+  const sortList = (list: Indices[], key: "spell" | "melee" | "poison" | "mana" | "skillPoints" | "health" | "life" | "walkspeed" | "major"): Indices[] => {
     if (list !== null) {
+      if (key === "major") {
+        return list.sort((index1, index2) => index2["major"][0].localeCompare(index1["major"][0]))
+      }
       return list.sort((index1, index2) => index2[key][0] - index1[key][0]);
     }
     return [];
@@ -290,7 +282,7 @@ export default function Home() {
   }
 
   return (
-    <main className="m-16 flex flex-col gap-10 w-8/12">
+    <main className="m-16 flex flex-col gap-10">
       <div>
         <h1 className="text-3xl font-bold leading-12">Wynncraft Build Assist</h1>
         <h2 className="text-2xl">a goofy web app by euouae</h2>
@@ -312,12 +304,12 @@ export default function Home() {
             <ul>
               <li className="indent-8">- Spell index: The spell index is the damage increase of a theoretical spell which has 100% neutral spell conversion as a result of equipping an item.</li>
               <li className="indent-8">- Melee index: The melee index is the increase in melee DPS as a result of equipping an item.</li>
-              <li className="indent-8">- Poison index: The poison index is the increase in poison DPS as a result of equipping an item.</li>
-              <li className="indent-8">- Mana index: The mana index is the approximate mana value saved per second as a result of equipping an item.</li>
-              {/* <li className="indent-8">- Skill point index:</li>
-              <li className="indent-8">- Health index:</li>
-              <li className="indent-8">- Health sustain index:</li>
-              <li className="indent-8">- Walkspeed index:</li> */}
+              <li className="indent-8">- Poison index: The poison index is the increase in poison DPS as a result of equipping an item. A red asterisk indicates that the item has negative poison, potentially negating the gains from other gear.</li>
+              <li className="indent-8">- Mana index: The mana index is the approximate mana value saved per second as a result of equipping an item. A red asterisk indicates that the gear uses percent spell costs, which is dependent on the original cost, ability tree cost reductions, and raw spell cost reductions from other pieces.</li>
+              <li className="indent-8">- Skill point index: The skill point index is the total SP gained in the relevant SP. Tt does not count SP that is excluded by the user. A red asterisk indicates that the item has negative SP in non-excluded SP.</li>
+              <li className="indent-8">- Health index: The skill point index is the total health gain from the item. A red asterisk indicates that some or all of the health is rollable.</li>
+              <li className="indent-8">- Health sustain index: The health sustain index is the approximate health regenerated per second as a result of equipping an item. A red asterisk indicates that the item has health regen %, which may positively or negatively affect bonuses from other gear.</li>
+              <li className="indent-8">- Walkspeed index: The walkspeed index is simply the walkspeed on the item.</li>
             </ul>
             Indices are meant to be easily calculated, and generalisable to a class’ various archetypes/playstyles. For this reason, they exclude specific aspects of the damage calculation process, introducing inaccuracies. Index calculations exclude:
             <ul>
@@ -433,6 +425,11 @@ export default function Home() {
             <option value="melee">Melee Damage</option>
             <option value="poison">Poison</option>
             <option value="mana">Mana Sustain</option>
+            <option value="skillPoints">Skill Points</option>
+            <option value="health">Health</option>
+            <option value="life">Life Sustain</option>
+            <option value="walkspeed">Walkspeed</option>
+            <option value="major">Major ID</option>
           </select> 
         </div>
         
@@ -441,18 +438,24 @@ export default function Home() {
 
       <div>
         <h2 className="text-xl font-bold">Results</h2>
-        <div className="border border-slate-600 w-[800px]">
+        <div className="border border-slate-600">
           <div className="m-2 flex">
             <p className="w-64 font-bold">Name</p>
             <p className="w-32 font-bold">Spell</p>
             <p className="w-32 font-bold">Melee</p>
             <p className="w-32 font-bold">Poison</p>
-            <p className="w-32 font-bold">Mana Sustain</p>
+            <p className="w-32 font-bold">Mana</p>
+            <p className="w-32 font-bold">Skill Points</p>
+            <p className="w-32 font-bold">Health</p>
+            <p className="w-32 font-bold">Life Sustain</p>
+            <p className="w-32 font-bold">Walkspeed</p>
+            <p className="w-64 font-bold">Major ID</p>
           </div>
           {
             indices ? indices.map((index) => {
               return <Item 
                 key={index.name}
+                toggleBg={indices.indexOf(index) % 2 === 1}
                 index={index} />
             }) : <></>
           }
