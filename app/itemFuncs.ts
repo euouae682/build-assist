@@ -115,8 +115,8 @@ const getIDMax = (ids: IDs, idName: string): number => {
 // Returns spell damage.
 // Specifically, returns the average damage of a theoretical spell with 100% neutral spell conversion.
 export const calcSpellDamage = (damage: Damage, ids: IDs) => {
-    const spellPct = getIDMax(ids, "damage") / 100 + getIDMax(ids, "spellDamage") / 100;
-    const spellRaw = getIDMax(ids, "rawDamage") + getIDMax(ids, "rawSpellDamage");
+    const spellPct = getIDMax(ids, "damageBonus") / 100 + getIDMax(ids, "spellDamage") / 100;
+    const spellRaw = getIDMax(ids, "damageBonusRaw") + getIDMax(ids, "rawSpellDamage");
 
     const nPct = getIDMax(ids, "neutralDamage") / 100 + getIDMax(ids, "neutralSpellDamage") / 100;
     const nRaw = getIDMax(ids, "rawNeutralDamage") + getIDMax(ids, "rawNeutralSpellDamage");
@@ -393,7 +393,6 @@ export const getWalkIndex = (gearIDs: IDs): [number] => {
 
 export const getMajorID = (gear: Item): [string] => {
     const major = gear['majorIds'];
-    console.log(JSON.stringify(major));
     if (major) {
         return [major["name"]];
     }
@@ -422,4 +421,49 @@ export const getIndices = (weapon: Item, powdering: string, gearName: string, ge
         walkspeed: getWalkIndex(gearIDs),
         major: getMajorID(gear),
     };
+}
+
+export const getWeaponIndices = (weaponName: string, weapon: Item, powderTier: number, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): [number, Indices] => {
+    const baseDamage: Damage = getDamages(weapon);
+
+    const powderSlots = 'powderSlots' in weapon ? weapon['powderSlots'] : 0;
+    let powdering = ""
+    if (baseDamage['damages']['thunder']['max'] > 0) {
+        powdering = `t${powderTier}`.repeat(powderSlots);
+    }
+    else if (baseDamage['damages']['earth']['max'] > 0) {
+        powdering = `e${powderTier}`.repeat(powderSlots);
+    }
+    else if (baseDamage['damages']['air']['max'] > 0) {
+        powdering = `a${powderTier}`.repeat(powderSlots);
+    }
+    else if (baseDamage['damages']['fire']['max'] > 0) {
+        powdering = `f${powderTier}`.repeat(powderSlots);
+    }
+    else if (baseDamage['damages']['water']['max'] > 0) {
+        powdering = `w${powderTier}`.repeat(powderSlots);
+    }
+    else {
+        powdering = `t${powderTier}`.repeat(powderSlots);
+    }
+
+    const powdersToApply: Powder[] = compressPowders(powdering);
+    const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
+    const weaponIDs: IDs = weapon['identifications'] ? weapon['identifications'] : {};
+    const powderStr: string = powdering === "" ? "" : `[${powdering}]`
+    
+    return [getBaseDPS(powderedDamage), {
+        level: weapon['requirements']['level'],
+        name: weaponName + " " + powderStr,
+        rarity: weapon['tier'],
+        spell: [calcSpellDamage(powderedDamage, weaponIDs)],
+        melee: [calcMeleeDamage(powderedDamage, weaponIDs), ""],
+        poison: [calcPoisonDamage(weaponIDs), ""],
+        mana: [calcManaSustain(weaponIDs, steals, cps, spellCycle, costs), ""],
+        skillPoints: getSPIndex(weaponIDs, sp),
+        health: [getIDMax(weaponIDs, 'rawHealth'), ""],
+        life: [calcLifeSustain(weaponIDs, steals), ""],
+        walkspeed: getWalkIndex(weaponIDs),
+        major: getMajorID(weapon)
+    }]
 }
