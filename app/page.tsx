@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Item from "./Item";
 import { getIndices } from "./itemFuncs";
+import { SPELL_COSTS } from "./constants";
 
 export type IDs = {
   [key: string]: number | {
@@ -80,7 +81,7 @@ export default function Home() {
   const [useSteals, setUseSteals] = useState(true);
   const [cps, setCps] = useState(0);
   const [spellCycle, setSpellCycle] = useState('');
-  const [costs, setCosts] = useState<[number, number, number, number]>([35, 20, 35, 30]);
+  const [costs, setCosts] = useState<[number, number, number, number]>([0, 0, 0, 0]);
 
   // Form state variables - Sort by
   const [sortBy, setSortBy] = useState('spell');
@@ -248,9 +249,8 @@ export default function Home() {
     setLevelReq(e.target.valueAsNumber);
   }
 
-  const onCostsChange = (e: React.ChangeEvent<HTMLInputElement>, spell: number): void => {
-    let newCosts: [number, number, number, number] = [...costs];
-    newCosts[spell] = e.target.valueAsNumber;
+  const onIntChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    const newCosts: [number, number, number, number] = SPELL_COSTS[weaponType][e.target.value];
     setCosts(newCosts);
   }
 
@@ -352,7 +352,7 @@ export default function Home() {
         </div> 
 
         <h2 className="text-xl font-bold">Playstyle</h2>
-        <div>
+        <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="playstyle">Playstyle: </label>
           <select id="playstyle" name="playstyle" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onPlaystyleChange}>
             <option value="steals">Hybrid or Melee (MR/MS)</option>
@@ -360,25 +360,23 @@ export default function Home() {
           </select>
         </div>
 
-        <div>
+        <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="cps">CPS: </label>
           <input type="number" id="cps" name="cps" className="bg-slate-200 rounded-md p-1 transition w-16" onChange={onCPSChange} />
         </div>
 
-        <div>
+        <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="cps">Spell Cycle (i.e. 1334): </label>
           <input type="text" id="cps" name="cps" className="bg-slate-200 rounded-md p-1 transition w-32" onChange={onSpellCycleChange} pattern={"[1-4]+"} />
         </div>
 
-        <div>
-          <label htmlFor="cost1">1st Spell Cost: {costs[0]} </label>
-          <input className="w-48" type="range" id="cost1" name="cost1" min="1" max="100" value={costs[0]} onChange={(e) => onCostsChange(e, 0)} /><br/>
-          <label htmlFor="cost2">2nd Spell Cost: {costs[1]} </label>
-          <input className="w-48" type="range" id="cost2" name="cost2" min="1" max="100" value={costs[1]} onChange={(e) => onCostsChange(e, 1)} /><br/>
-          <label htmlFor="cost3">3rd Spell Cost: {costs[2]} </label>
-          <input className="w-48" type="range" id="cost3" name="cost3" min="1" max="100" value={costs[2]} onChange={(e) => onCostsChange(e, 2)} /><br/>
-          <label htmlFor="cost4">4th Spell Cost: {costs[3]} </label>
-          <input className="w-48" type="range" id="cost4" name="cost4" min="1" max="100" value={costs[3]} onChange={(e) => onCostsChange(e, 3)} /><br/>
+        <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
+          <label htmlFor="int">Estimated Int: </label>
+          <select id="int" name="int" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onIntChange}>
+            <option value="0">0 int</option>
+            <option value="60">60 int</option>
+            <option value="120">120 int</option>
+          </select>
         </div>
 
         <h2 className="text-xl font-bold">Filters</h2>
