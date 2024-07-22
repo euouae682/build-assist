@@ -428,7 +428,10 @@ export const getWeaponIndices = (weaponName: string, weapon: Item, powderTier: n
 
     const powderSlots = 'powderSlots' in weapon ? weapon['powderSlots'] : 0;
     let powdering = ""
-    if (baseDamage['damages']['thunder']['max'] > 0) {
+    if (powderTier === 0) {
+        powdering = "";
+    }
+    else if (baseDamage['damages']['thunder']['max'] > 0) {
         powdering = `t${powderTier}`.repeat(powderSlots);
     }
     else if (baseDamage['damages']['earth']['max'] > 0) {
