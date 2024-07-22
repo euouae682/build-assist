@@ -17,7 +17,7 @@ export default function Home() {
   const [useSteals, setUseSteals] = useState(true);
   const [cps, setCps] = useState(6);
   const [spellCycle, setSpellCycle] = useState('1234');
-  const [int, setInt] = useState('0');
+  const [int, setInt] = useState('60');
   const [costs, setCosts] = useState<[number, number, number, number]>([35, 20, 35, 30]);
 
   // Form state variables - Sort by
