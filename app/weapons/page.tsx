@@ -15,8 +15,9 @@ export default function Home() {
 
   // Form state variables - CPS/Steals
   const [useSteals, setUseSteals] = useState(true);
-  const [cps, setCps] = useState(0);
-  const [spellCycle, setSpellCycle] = useState('');
+  const [cps, setCps] = useState(6);
+  const [spellCycle, setSpellCycle] = useState('1234');
+  const [int, setInt] = useState('0');
   const [costs, setCosts] = useState<[number, number, number, number]>([35, 20, 35, 30]);
 
   // Form state variables - Sort by
@@ -99,6 +100,7 @@ export default function Home() {
 
   const onClassChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     setWeaponType(e.target.value);
+    setCosts(SPELL_COSTS[e.target.value][int]);
   }
 
   const onPowderChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
@@ -133,6 +135,7 @@ export default function Home() {
   }
 
   const onIntChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    setInt(e.target.value);
     const newCosts: [number, number, number, number] = SPELL_COSTS[weaponType][e.target.value];
     setCosts(newCosts);
   }
@@ -194,7 +197,7 @@ export default function Home() {
         <h2 className="text-xl font-bold">Playstyle</h2>
         <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="playstyle">Playstyle: </label>
-          <select id="playstyle" name="playstyle" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onPlaystyleChange}>
+          <select id="playstyle" name="playstyle" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" value={useSteals ? "steals" : "regen"} onChange={onPlaystyleChange}>
             <option value="steals">Hybrid or Melee (MR/MS)</option>
             <option value="regen">Spellspam (Only MR)</option>
           </select>
@@ -202,17 +205,17 @@ export default function Home() {
 
         <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="cps">CPS: </label>
-          <input type="number" id="cps" name="cps" className="bg-slate-200 rounded-md p-1 transition w-16" onChange={onCPSChange} />
+          <input type="number" id="cps" name="cps" className="bg-slate-200 rounded-md p-1 transition w-16" value={cps} onChange={onCPSChange} />
         </div>
 
         <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="cps">Spell Cycle (i.e. 1334): </label>
-          <input type="text" id="cps" name="cps" className="bg-slate-200 rounded-md p-1 transition w-32" onChange={onSpellCycleChange} pattern={"[1-4]+"} />
+          <input type="text" id="cps" name="cps" className="bg-slate-200 rounded-md p-1 transition w-32" value={spellCycle} onChange={onSpellCycleChange} pattern={"[1-4]+"} />
         </div>
 
         <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="int">Estimated Int: </label>
-          <select id="int" name="int" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onIntChange}>
+          <select id="int" name="int" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" value={int} onChange={onIntChange}>
             <option value="0">0 int</option>
             <option value="60">60 int</option>
             <option value="120">120 int</option>
@@ -236,7 +239,7 @@ export default function Home() {
 
         <div>
           <label htmlFor="level">Max Level: </label>
-          <input type="number" id="level" name="level" className="bg-slate-200 rounded-md p-1 transition w-16" onChange={onLevelChange} />
+          <input type="number" id="level" name="level" className="bg-slate-200 rounded-md p-1 transition w-16" value={levelReq} onChange={onLevelChange} />
         </div>
 
         <div>
