@@ -22,6 +22,7 @@ export default function Home() {
 
   // Form state variables - Sort by
   const [sortBy, setSortBy] = useState('dps');
+  const [showAmt, setShowAmt] = useState(100);
 
   // Data state variables
   const [itemsList, setItemsList] = useState<ItemList | null>(null);
@@ -82,7 +83,7 @@ export default function Home() {
       || sortBy === "life" || sortBy === "walkspeed" || sortBy === "major") {
       sortList(indicesList, sortBy);
     }
-    setIndices(indicesList.slice(0, 99));
+    setIndices(indicesList.slice(0, showAmt));
   }
 
   const sortList = (list: [number, Indices][], key: "dps" | "spell" | "melee" | "poison" | "mana" | "skillPoints" | "health" | "life" | "walkspeed" | "major"): [number, Indices][] => {
@@ -142,6 +143,10 @@ export default function Home() {
 
   const onSortByChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     setSortBy(e.target.value);
+  }
+
+  const onShowAmtChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    setShowAmt(Number(e.target.value));
   }
 
   const onFormSubmit = (e: React.FormEvent): void => {
@@ -255,6 +260,18 @@ export default function Home() {
             <option value="life">Life Sustain</option>
             <option value="walkspeed">Walkspeed</option>
             <option value="major">Major ID</option>
+          </select> 
+        </div>
+
+        <div>
+          <label htmlFor="showamt">Number of Results: </label>
+          <select id="showamt" name="showamt" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" value={showAmt} onChange={onShowAmtChange}>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="500">500</option>
           </select> 
         </div>
         
