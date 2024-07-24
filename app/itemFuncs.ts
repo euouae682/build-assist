@@ -142,7 +142,7 @@ export const calcSpellDamage = (damage: Damage, ids: IDs) => {
         let totalMod = 1 + spellPct;
         let totalRawMod = 0;
 
-        if (key === "neutral") {
+        if (key === "neutral" && damage['damages']['neutral']['max'] != 0) {
             totalMod += nPct;
             totalRawMod += nRaw;
         }
@@ -228,7 +228,7 @@ export const calcMeleeDamage = (damage: Damage, ids: IDs) => {
         let totalMod = 1 + meleePct;
         let totalRawMod = 0;
 
-        if (key === "neutral") {
+        if (key === "neutral" && damage['damages']['neutral']['max'] != 0) {
             totalMod += nPct;
             totalRawMod += nRaw;
         }
