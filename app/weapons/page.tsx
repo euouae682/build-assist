@@ -280,7 +280,7 @@ export default function Home() {
 
       <div>
         <h2 className="text-xl font-bold">Results</h2>
-        <div className="border border-slate-600">
+        <div className="border border-slate-600 text-sm">
           <div className="m-2 flex">
             <p className="w-64 font-bold">Name</p>
             <p className="w-32 font-bold">Base DPS</p>
@@ -288,10 +288,11 @@ export default function Home() {
             <p className="w-32 font-bold">Melee</p>
             <p className="w-32 font-bold">Poison</p>
             <p className="w-32 font-bold">Mana</p>
-            <p className="w-32 font-bold">Skill Points</p>
+            <p className="w-24 font-bold">SP</p>
             <p className="w-32 font-bold">Health</p>
+            <p className="w-24 font-bold">WS</p>
             <p className="w-32 font-bold">Life Sustain</p>
-            <p className="w-32 font-bold">Walkspeed</p>
+            <p className="w-24 font-bold">Healing</p>
             <p className="w-64 font-bold">Major ID</p>
           </div>
           {

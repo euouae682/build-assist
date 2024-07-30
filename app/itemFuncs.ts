@@ -391,6 +391,10 @@ export const getWalkIndex = (gearIDs: IDs): [number] => {
     return [getIDMax(gearIDs, "walkSpeed")];
 }
 
+export const getHealingIndex = (gearIDs: IDs): [number] => {
+    return [getIDMax(gearIDs, "healingEfficiency")];
+}
+
 export const getMajorID = (gear: Item): [string] => {
     const major = gear['majorIds'];
     if (major) {
@@ -419,6 +423,7 @@ export const getIndices = (weapon: Item, powdering: string, gearName: string, ge
         health: getHealthIndex(gear, gearIDs),
         life: getLifeIndex(weaponIDs, gearIDs, accumulatedIDs, steals),
         walkspeed: getWalkIndex(gearIDs),
+        healing: getHealingIndex(gearIDs),
         major: getMajorID(gear),
     };
 }
@@ -467,6 +472,7 @@ export const getWeaponIndices = (weaponName: string, weapon: Item, powderTier: n
         health: [getIDMax(weaponIDs, 'rawHealth'), ""],
         life: [calcLifeSustain(weaponIDs, steals), ""],
         walkspeed: getWalkIndex(weaponIDs),
+        healing: getHealingIndex(weaponIDs),
         major: getMajorID(weapon)
     }]
 }
