@@ -80,13 +80,14 @@ export default function Home() {
 
     if (sortBy === "dps" || sortBy === "spell" || sortBy === "melee" || sortBy === "poison" 
       || sortBy === "mana" || sortBy === "skillPoints" || sortBy === "health"
-      || sortBy === "life" || sortBy === "walkspeed" || sortBy === "major") {
+      || sortBy === "life" || sortBy === "walkspeed" || sortBy === "healing"
+      || sortBy === "major") {
       sortList(indicesList, sortBy);
     }
     setIndices(indicesList.slice(0, showAmt));
   }
 
-  const sortList = (list: [number, Indices][], key: "dps" | "spell" | "melee" | "poison" | "mana" | "skillPoints" | "health" | "life" | "walkspeed" | "major"): [number, Indices][] => {
+  const sortList = (list: [number, Indices][], key: "dps" | "spell" | "melee" | "poison" | "mana" | "skillPoints" | "health" | "life" | "walkspeed" | "healing" | "major"): [number, Indices][] => {
     if (list !== null) {
       if (key === "dps") {
         return list.sort((index1, index2) => index2[0] - index1[0])
@@ -222,6 +223,7 @@ export default function Home() {
           <label htmlFor="int">Estimated Int: </label>
           <select id="int" name="int" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" value={int} onChange={onIntChange}>
             <option value="0">0 int</option>
+            <option value="30">30 int</option>
             <option value="60">60 int</option>
             <option value="120">120 int</option>
           </select>
@@ -257,8 +259,9 @@ export default function Home() {
             <option value="mana">Mana Sustain</option>
             <option value="skillPoints">Skill Points</option>
             <option value="health">Health</option>
-            <option value="life">Life Sustain</option>
             <option value="walkspeed">Walkspeed</option>
+            <option value="life">Life Sustain</option>
+            <option value="healing">Healing</option>
             <option value="major">Major ID</option>
           </select> 
         </div>
