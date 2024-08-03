@@ -149,23 +149,23 @@ export const calcSpellDamage = (damage: Damage, ids: IDs) => {
         else {
             hasElemental = true;
             totalMod += elePct;
-            if (key === "earth") {
+            if (key === "earth" && damage['damages']['earth']['max'] != 0) {
                 totalMod += ePct;
                 totalRawMod += eRaw;
             }
-            else if (key === "thunder") {
+            else if (key === "thunder" && damage['damages']['thunder']['max'] != 0) {
                 totalMod += tPct;
                 totalRawMod += tRaw;
             }
-            else if (key === "water") {
+            else if (key === "water" && damage['damages']['water']['max'] != 0) {
                 totalMod += wPct;
                 totalRawMod += wRaw;
             }
-            else if (key === "fire") {
+            else if (key === "fire" && damage['damages']['fire']['max'] != 0) {
                 totalMod += fPct;
                 totalRawMod += fRaw;
             }
-            else if (key === "air") {
+            else if (key === "air" && damage['damages']['air']['max'] != 0) {
                 totalMod += aPct;
                 totalRawMod += aRaw;
             }
@@ -235,23 +235,23 @@ export const calcMeleeDamage = (damage: Damage, ids: IDs) => {
         else {
             hasElemental = true;
             totalMod += elePct;
-            if (key === "earth") {
+            if (key === "earth" && damage['damages']['earth']['max'] != 0) {
                 totalMod += ePct;
                 totalRawMod += eRaw;
             }
-            else if (key === "thunder") {
+            else if (key === "thunder" && damage['damages']['thunder']['max'] != 0) {
                 totalMod += tPct;
                 totalRawMod += tRaw;
             }
-            else if (key === "water") {
+            else if (key === "water" && damage['damages']['water']['max'] != 0) {
                 totalMod += wPct;
                 totalRawMod += wRaw;
             }
-            else if (key === "fire") {
+            else if (key === "fire" && damage['damages']['fire']['max'] != 0) {
                 totalMod += fPct;
                 totalRawMod += fRaw;
             }
-            else if (key === "air") {
+            else if (key === "air" && damage['damages']['air']['max'] != 0) {
                 totalMod += aPct;
                 totalRawMod += aRaw;
             }
