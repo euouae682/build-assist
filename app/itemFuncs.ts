@@ -348,10 +348,10 @@ export const getMeleeIndex = (damage: Damage, weaponIDs: IDs, gearIDs: IDs, accu
     return [calcMeleeDamage(damage, accumulatedIDs) - calcMeleeDamage(damage, weaponIDs), note];
 }
 
-export const getPoisonIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs): [number, string] => {
-    const poisonID = getIDMax(gearIDs, "poison");
-    return [calcPoisonDamage(accumulatedIDs) - calcPoisonDamage(weaponIDs), poisonID < 0 ? "neg" : ""];
-}
+// export const getPoisonIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs): [number, string] => {
+//     const poisonID = getIDMax(gearIDs, "poison");
+//     return [calcPoisonDamage(accumulatedIDs) - calcPoisonDamage(weaponIDs), poisonID < 0 ? "neg" : ""];
+// }
 
 export const getManaIndex = (weaponIDs: IDs, gearIDs: IDs,  accumulatedIDs: IDs, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number]): [number, string] => {
     const [pct1, pct2, pct3, pct4] = [getIDMax(gearIDs, "1stSpellCost"), getIDMax(gearIDs, "2ndSpellCost"), getIDMax(gearIDs, "3rdSpellCost"), getIDMax(gearIDs, "4thSpellCost"),]
@@ -387,21 +387,21 @@ export const getLifeIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs, 
     return [calcLifeSustain(accumulatedIDs, steals) - calcLifeSustain(weaponIDs, steals), hrID !== 0 ? "pct" : ""]
 }
 
-export const getWalkIndex = (gearIDs: IDs): [number] => {
-    return [getIDMax(gearIDs, "walkSpeed")];
-}
+// export const getWalkIndex = (gearIDs: IDs): [number] => {
+//     return [getIDMax(gearIDs, "walkSpeed")];
+// }
 
-export const getHealingIndex = (gearIDs: IDs): [number] => {
-    return [getIDMax(gearIDs, "healingEfficiency")];
-}
+// export const getHealingIndex = (gearIDs: IDs): [number] => {
+//     return [getIDMax(gearIDs, "healingEfficiency")];
+// }
 
-export const getMajorID = (gear: Item): [string] => {
-    const major = gear['majorIds'];
-    if (major) {
-        return [major["name"]];
-    }
-    return [""]
-}
+// export const getMajorID = (gear: Item): [string] => {
+//     const major = gear['majorIds'];
+//     if (major) {
+//         return [major["name"]];
+//     }
+//     return [""]
+// }
 
 export const getIndices = (weapon: Item, powdering: string, gearName: string, gear: Item, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
@@ -417,14 +417,14 @@ export const getIndices = (weapon: Item, powdering: string, gearName: string, ge
         rarity: gear['tier'],
         spell: getSpellIndex(powderedDamage, weaponIDs, accumulatedIDs),
         melee: getMeleeIndex(powderedDamage, weaponIDs, gearIDs, accumulatedIDs),
-        poison: getPoisonIndex(weaponIDs, gearIDs, accumulatedIDs),
+        // poison: getPoisonIndex(weaponIDs, gearIDs, accumulatedIDs),
         mana: getManaIndex(weaponIDs, gearIDs, accumulatedIDs, steals, cps, spellCycle, costs),
         skillPoints: getSPIndex(gearIDs, sp),
         health: getHealthIndex(gear, gearIDs),
         life: getLifeIndex(weaponIDs, gearIDs, accumulatedIDs, steals),
-        walkspeed: getWalkIndex(gearIDs),
-        healing: getHealingIndex(gearIDs),
-        major: getMajorID(gear),
+        // walkspeed: getWalkIndex(gearIDs),
+        // healing: getHealingIndex(gearIDs),
+        // major: getMajorID(gear),
     };
 }
 
@@ -466,13 +466,13 @@ export const getWeaponIndices = (weaponName: string, weapon: Item, powderTier: n
         rarity: weapon['tier'],
         spell: [calcSpellDamage(powderedDamage, weaponIDs)],
         melee: [calcMeleeDamage(powderedDamage, weaponIDs), ""],
-        poison: [calcPoisonDamage(weaponIDs), ""],
+        // poison: [calcPoisonDamage(weaponIDs), ""],
         mana: [calcManaSustain(weaponIDs, steals, cps, spellCycle, costs), ""],
         skillPoints: getSPIndex(weaponIDs, sp),
         health: [getIDMax(weaponIDs, 'rawHealth'), ""],
         life: [calcLifeSustain(weaponIDs, steals), ""],
-        walkspeed: getWalkIndex(weaponIDs),
-        healing: getHealingIndex(weaponIDs),
-        major: getMajorID(weapon)
+        // walkspeed: getWalkIndex(weaponIDs),
+        // healing: getHealingIndex(weaponIDs),
+        // major: getMajorID(weapon)
     }]
 }

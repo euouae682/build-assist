@@ -58,14 +58,14 @@ export type Indices = {
   rarity: string,
   spell: [number],
   melee: [number, string],
-  poison: [number, string],
+  // poison: [number, string],
   mana: [number, string],
   skillPoints: [number, string]
   health: [number, string],
   life: [number, string],
-  walkspeed: [number],
-  healing: [number],
-  major: [string]
+  // walkspeed: [number],
+  // healing: [number],
+  // major: [string]
 }
 
 export default function Home() {
@@ -187,20 +187,19 @@ export default function Home() {
       })
     }
 
-    if (sortBy === "spell" || sortBy === "melee" || sortBy === "poison" 
+    if (sortBy === "spell" || sortBy === "melee"  
       || sortBy === "mana" || sortBy === "skillPoints" || sortBy === "health"
-      || sortBy === "life" || sortBy === "walkspeed" || sortBy === "healing"
-      || sortBy === "major") {
+      || sortBy === "life") {
       sortList(indicesList, sortBy);
     }
     setIndices(indicesList.slice(0, showAmt));
   }
 
-  const sortList = (list: Indices[], key: "spell" | "melee" | "poison" | "mana" | "skillPoints" | "health" | "life" | "walkspeed" | "healing" | "major"): Indices[] => {
+  const sortList = (list: Indices[], key: "spell" | "melee" | "mana" | "skillPoints" | "health" | "life"): Indices[] => {
     if (list !== null) {
-      if (key === "major") {
-        return list.sort((index1, index2) => index2["major"][0].localeCompare(index1["major"][0]))
-      }
+      // if (key === "major") {
+      //   return list.sort((index1, index2) => index2["major"][0].localeCompare(index1["major"][0]))
+      // }
       return list.sort((index1, index2) => index2[key][0] - index1[key][0]);
     }
     return [];
@@ -432,14 +431,14 @@ export default function Home() {
           <select id="sortby" name="sortby" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onSortByChange}>
             <option value="spell">Spell Damage</option>
             <option value="melee">Melee Damage</option>
-            <option value="poison">Poison</option>
+            {/* <option value="poison">Poison</option> */}
             <option value="mana">Mana Sustain</option>
             <option value="skillPoints">Skill Points</option>
             <option value="health">Health</option>
-            <option value="walkspeed">Walkspeed</option>
+            {/* <option value="walkspeed">Walkspeed</option> */}
             <option value="life">Life Sustain</option>
-            <option value="healing">Healing</option>
-            <option value="major">Major ID</option>
+            {/* <option value="healing">Healing</option>
+            <option value="major">Major ID</option> */}
           </select> 
         </div>
 
@@ -465,14 +464,14 @@ export default function Home() {
             <p className="w-64 font-bold">Name</p>
             <p className="w-32 font-bold">Spell</p>
             <p className="w-32 font-bold">Melee</p>
-            <p className="w-32 font-bold">Poison</p>
+            {/* <p className="w-32 font-bold">Poison</p> */}
             <p className="w-32 font-bold">Mana</p>
             <p className="w-24 font-bold">SP</p>
             <p className="w-32 font-bold">Health</p>
-            <p className="w-24 font-bold">WS</p>
+            {/* <p className="w-24 font-bold">WS</p> */}
             <p className="w-32 font-bold">Life Sustain</p>
-            <p className="w-24 font-bold">Healing</p>
-            <p className="w-64 font-bold">Major ID</p>
+            {/* <p className="w-24 font-bold">Healing</p>
+            <p className="w-64 font-bold">Major ID</p> */}
           </div>
           {
             indices ? indices.map((index) => {
