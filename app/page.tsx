@@ -4,69 +4,7 @@ import React, { useState, useEffect } from "react";
 import Item from "./Item";
 import { getIndices } from "./itemFuncs";
 import { SPELL_COSTS } from "./constants";
-
-export type IDs = {
-  [key: string]: number | {
-    min: number,
-    max: number,
-    raw: number
-  }
-}
-
-export type Item = {
-  tier: string,
-  powderSlots: number,
-  type: string,
-  attackSpeed: string,
-  majorIds?: {
-    name: string,
-    description: string
-  },
-  base?: {
-    [key: string]: {
-      min: number,
-      max: number
-    } | number,
-  },
-  requirements: {
-    level: number
-    [key: string]: number
-  }
-  identifications: IDs,
-  [key: string]: unknown
-};
-
-export type ItemList = {
-  [key: string]: Item
-}
-
-export type Damage = {
-  baseAtkMult: number,
-  damages: {
-    neutral: {min: number, max: number},
-    earth: {min: number, max: number},
-    thunder: {min: number, max: number},
-    water: {min: number, max: number},
-    fire: {min: number, max: number},
-    air: {min: number, max: number}
-  }
-}
-
-export type Indices = {
-  level: number,
-  name: string,
-  rarity: string,
-  spell: [number],
-  melee: [number, string],
-  // poison: [number, string],
-  mana: [number, string],
-  skillPoints: [number, string]
-  health: [number, string],
-  life: [number, string],
-  // walkspeed: [number],
-  // healing: [number],
-  // major: [string]
-}
+import { ItemList, Indices } from "./itemTypes"
 
 export default function Home() {
   // Form state variables - general

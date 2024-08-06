@@ -1,4 +1,4 @@
-import { Indices } from "../page"
+import { Indices } from "../itemTypes"
 
 type ItemProps = {
     toggleBg: boolean;

@@ -1,8 +1,8 @@
-import { POWDERS, ATK_MULTIPLIERS, SPELL_COSTS, Powder } from "./constants";
-import { Item, ItemList, Damage, IDs, Indices } from "./page";
+import { POWDERS, ATK_MULTIPLIERS, Powder } from "./constants";
+import { WynnItem, Damage, IDs, Indices } from "./itemTypes";
 
 // Get the base damages/base attack speed of a weapon
-const getDamages = (weapon: Item): Damage => {
+const getDamages = (weapon: WynnItem): Damage => {
     const base = weapon['base']
     if (base) {
         return {
@@ -371,7 +371,7 @@ export const getSPIndex = (gearIDs: IDs, sp: [boolean, boolean, boolean, boolean
     return [str + dex + int + def + agi, warning ? "neg" : ""];
 }
 
-export const getHealthIndex = (gear: Item, gearIDs: IDs): [number, string] => {
+export const getHealthIndex = (gear: WynnItem, gearIDs: IDs): [number, string] => {
     let baseHP = 0;
     if (gear !== undefined && 'base' in gear) {
         if (gear['base'] !== undefined && 'health' in gear['base']) {
@@ -403,7 +403,7 @@ export const getLifeIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs, 
 //     return [""]
 // }
 
-export const getIndices = (weapon: Item, powdering: string, gearName: string, gear: Item, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
+export const getIndices = (weapon: WynnItem, powdering: string, gearName: string, gear: WynnItem, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
     const powdersToApply: Powder[] = compressPowders(powdering);
     const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
@@ -428,7 +428,7 @@ export const getIndices = (weapon: Item, powdering: string, gearName: string, ge
     };
 }
 
-export const getWeaponIndices = (weaponName: string, weapon: Item, powderTier: number, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): [number, Indices] => {
+export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTier: number, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): [number, Indices] => {
     const baseDamage: Damage = getDamages(weapon);
 
     const powderSlots = 'powderSlots' in weapon ? weapon['powderSlots'] : 0;

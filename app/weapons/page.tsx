@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { IDs, ItemList, Damage, Indices } from "../page";
+import { ItemList, Indices } from "../itemTypes";
 import Weapon from "./Weapon";
 import { getWeaponIndices } from "../itemFuncs";
 import { SPELL_COSTS } from "../constants";
