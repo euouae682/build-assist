@@ -1,4 +1,5 @@
 import { Indices } from "./itemTypes"
+import { useState } from "react";
 
 type ItemProps = {
     toggleBg: boolean;
@@ -6,6 +7,8 @@ type ItemProps = {
 }
 
 export default function Item({ toggleBg, index }: ItemProps) {
+    const [showDetails, setShowDetails] = useState(false);
+
     const getRarityColor = (rarity: string): string => {
         if (rarity === "set") {
             return '#09eb0d'
@@ -50,10 +53,14 @@ export default function Item({ toggleBg, index }: ItemProps) {
         return "";
     }
 
+    const onNameClick = () => {
+        setShowDetails(!showDetails);
+    }
+
     return (
         <section style={{backgroundColor: toggleBg ? '#f0f0f0' : '#ffffff'}} className="p-2 text-sm">
             <div className="flex">
-                <p style={{color: getRarityColor(index.rarity)}} className="w-64">Lv. {index.level} { index.name }</p>
+                <p style={{color: getRarityColor(index.rarity)}} className="w-64 cursor-pointer hover:opacity-40 transition-all" onClick={onNameClick} >Lv. {index.level} { index.name }</p>
                 <p style={{color: getSignColor(index.spell[0])}} className="w-48">{ index.spell[0].toFixed(2) }</p>
                 <p style={{color: getSignColor(index.melee[0])}} className="w-48">{ index.melee[0].toFixed(2) } <i className="text-black">{getMeleeType(index.melee[1])}</i></p>
                 <p style={{color: getSignColor(index.mana[0])}} className="w-48">{ index.mana[0].toFixed(2) }<strong className="text-red-600">{index.mana[1] === "pct" ? "*" : ""}</strong></p>
@@ -63,8 +70,9 @@ export default function Item({ toggleBg, index }: ItemProps) {
                 <p className="w-48">111</p>
                 <p className="w-48">111</p>
             </div>
+            { showDetails &&
             <div className="pt-2 flex">
-            <div className="flex flex-col w-64">
+                <div className="flex flex-col w-64">
                     <p>Str Req: XXX</p>
                     <p>Dex Req: XXX</p>
                     <p>Int Req: XXX</p>
@@ -139,8 +147,8 @@ export default function Item({ toggleBg, index }: ItemProps) {
                     <p>Sprint Regen: +XXX%</p>
                 </div>
             </div>
+            }
         </section>
-      
     );
   }
   
