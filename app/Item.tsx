@@ -56,85 +56,87 @@ export default function Item({ toggleBg, index }: ItemProps) {
                 <p style={{color: getRarityColor(index.rarity)}} className="w-64">Lv. {index.level} { index.name }</p>
                 <p style={{color: getSignColor(index.spell[0])}} className="w-48">{ index.spell[0].toFixed(2) }</p>
                 <p style={{color: getSignColor(index.melee[0])}} className="w-48">{ index.melee[0].toFixed(2) } <i className="text-black">{getMeleeType(index.melee[1])}</i></p>
-                {/* <p style={{color: getSignColor(index.poison[0])}} className="w-32">{ index.poison[0].toFixed(2) }<strong className="text-red-600">{index.poison[1] === "neg" ? "*" : ""}</strong></p> */}
                 <p style={{color: getSignColor(index.mana[0])}} className="w-48">{ index.mana[0].toFixed(2) }<strong className="text-red-600">{index.mana[1] === "pct" ? "*" : ""}</strong></p>
-                <p style={{color: getSignColor(index.skillPoints[0])}} className="w-32">{ index.skillPoints[0] }<strong className="text-red-600">{index.skillPoints[1] === "neg" ? "*" : ""}</strong></p>
+                <p style={{color: getSignColor(index.skillPoints[0])}} className="w-24">{ index.skillPoints[0] }<strong className="text-red-600">{index.skillPoints[1] === "neg" ? "*" : ""}</strong></p>
                 <p style={{color: getSignColor(index.health[0])}} className="w-48">{ index.health[0] }<strong className="text-red-600">{index.health[1] === "rol" ? "*" : ""}</strong></p>
-                {/* <p style={{color: getSignColor(index.walkspeed[0])}} className="w-24">{ index.walkspeed[0] }</p> */}
                 <p style={{color: getSignColor(index.life[0])}} className="w-48">{ index.life[0].toFixed(2) }<strong className="text-red-600">{index.life[1] === "pct" ? "*" : ""}</strong></p>
-                {/* <p style={{color: getSignColor(index.healing[0])}} className="w-24">{ index.healing[0] }</p>
-                <p className="w-64 text-blue-400">{ index.major[0] }</p> */}
+                <p className="w-48">111</p>
+                <p className="w-48">111</p>
             </div>
             <div className="pt-2 flex">
-                <div className="flex flex-col w-64">
-                    <p>Str Req: XX</p>
-                    <p>Dex Req: XX</p>
-                    <p>Int Req: XX</p>
-                    <p>Def Req: XX</p>
-                    <p>Agi Req: XX</p>
-                    <p>Quest Req: XXXXXX</p>
-                    <p>Slots: X</p>
-                    <p>Major ID: XXXXXX</p>
+            <div className="flex flex-col w-64">
+                    <p>Str Req: XXX</p>
+                    <p>Dex Req: XXX</p>
+                    <p>Int Req: XXX</p>
+                    <p>Def Req: XXX</p>
+                    <p>Agi Req: XXX</p>
+                    <p>Quest Req: XXXXXXXXXXXX</p>
+                    <p>Slots: XX</p>
+                    <p>Major ID: XXXXXXXXXXXX</p>
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>XX% N, ±XX</p>
-                    <p>XX% E, ±XX</p>
-                    <p>XX% T, ±XX</p>
-                    <p>XX% W, ±XX</p>
-                    <p>XX% F, ±XX</p>
-                    <p>XX% A, ±XX</p>
-                    <p>Base Speed: XXXX</p>
-                    <p>Slots: X</p>
+                    <p>Spell: +XXX%, +XXXX</p>
+                    <p>Elemt. Spell: XX%, XX</p>
+                    <p>Thunder Spell: +XXX%, +XXXX</p>
+                    <p>Thunder: +XXX%, +XXXX</p>
+                    <p>Fire: XX%, XX</p>
+                    <p>Air: XXX</p>
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>Strength Req: XX</p>
-                    <p>Dexterity Req: XX</p>
-                    <p>Intelligence Req: XX</p>
-                    <p>Defense Req: XX</p>
-                    <p>Agility Req: XX</p>
-                    <p>Quest Req: XXXXXX</p>
-                    <p>Powder Slots: X</p>
-                    <p>Major ID: XXXXXX</p>
+                    <p>Melee: XX%, XX</p>
+                    <p>Elemt. Melee: XX%, XX</p>
+                    <p>Earth: -XX%</p>
+                    <p>Thunder Melee: XXX</p>
+                    <p>Fire: XX%, XX</p>
+                    <p>Air Melee: XXX</p>
+                    <p>Speed Bonus: +XX</p>
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>Strength Req: XX</p>
-                    <p>Dexterity Req: XX</p>
-                    <p>Intelligence Req: XX</p>
-                    <p>Defense Req: XX</p>
-                    <p>Agility Req: XX</p>
-                    <p>Quest Req: XXXXXX</p>
-                    <p>Powder Slots: X</p>
-                    <p>Major ID: XXXXXX</p>
+                    <p>Mana Regen: +XXX/5s</p>
+                    <p>Mana Steal: +XXX/3s</p>
+                    <p>1st Spell: +XXXX, +XXX%</p>
+                    <p>2nd Spell: +XXXX, +XXX%</p>
+                    <p>3rd Spell: +XXXX, +XXX%</p>
+                    <p>4th Spell: +XXXX, +XXX%</p>
                 </div>
-                <div className="flex flex-col w-32">
-                    <p>Strength Req: XX</p>
-                    <p>Dexterity Req: XX</p>
-                    <p>Intelligence Req: XX</p>
-                    <p>Defense Req: XX</p>
-                    <p>Agility Req: XX</p>
-                    <p>Quest Req: XXXXXX</p>
-                    <p>Powder Slots: X</p>
-                    <p>Major ID: XXXXXX</p>
+                <div className="flex flex-col w-24">
+                    <p>Str: XX</p>
+                    <p>Dex: XX</p>
+                    <p>Int: XX</p>
+                    <p>Def: XX</p>
+                    <p>Agi: XX</p>
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>Strength Req: XX</p>
-                    <p>Dexterity Req: XX</p>
-                    <p>Intelligence Req: XX</p>
-                    <p>Defense Req: XX</p>
-                    <p>Agility Req: XX</p>
-                    <p>Quest Req: XXXXXX</p>
-                    <p>Powder Slots: X</p>
-                    <p>Major ID: XXXXXX</p>
+                    <p>Base HP: XXXXX</p>
+                    <p>Bonus HP: +XXXXX</p>
+                    <p>Earth Def: +XXXX, +XXX%</p>
+                    <p>Thunder Def: +XXXX, +XXX%</p>
+                    <p>Water Def: +XXXX, +XXX%</p>
+                    <p>Fire Def: +XXXX, +XXX%</p>
+                    <p>Air Def: +XXXX, +XXX%</p>
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>Strength Req: XX</p>
-                    <p>Dexterity Req: XX</p>
-                    <p>Intelligence Req: XX</p>
-                    <p>Defense Req: XX</p>
-                    <p>Agility Req: XX</p>
-                    <p>Quest Req: XXXXXX</p>
-                    <p>Powder Slots: X</p>
-                    <p>Major ID: XXXXXX</p>
+                    <p>HP Regen: +XXX, +XXX%</p>
+                    <p>Life Steal: +XXXX/3s</p>
+                </div>
+                <div className="flex flex-col w-48">
+                    <p>Poison: +XXXXX/3s</p>
+                    <p>Walkspeed: +XXX%</p>
+                    <p>Jump Height: +XX</p>
+                    <p>Healing Eff: +XXX%</p>
+                    <p>Knockback: +XXX%</p>
+                    <p>Slow Enemy: +XXX%</p>
+                    <p>Weaken Enemy: +XXX%</p>
+                    <p>XP Bonus: +XXX%</p>
+                    <p>Loot Bonus: +XXX%</p>
+                </div>
+                <div className="flex flex-col w-48">
+                    <p>Thorns: +XXX%</p>
+                    <p>Reflection: +XXX%</p>
+                    <p>Exploding: +XXX%</p>
+                    <p>Stealing: +XXX%</p>
+                    <p>Sprint: +XXX%</p>
+                    <p>Sprint Regen: +XXX%</p>
                 </div>
             </div>
         </section>

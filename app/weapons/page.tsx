@@ -288,14 +288,12 @@ export default function Home() {
             <p className="w-48 font-bold">Base DPS</p>
             <p className="w-48 font-bold">Spell</p>
             <p className="w-48 font-bold">Melee</p>
-            {/* <p className="w-32 font-bold">Poison</p> */}
             <p className="w-48 font-bold">Mana</p>
-            <p className="w-32 font-bold">SP</p>
+            <p className="w-24 font-bold">SP</p>
             <p className="w-48 font-bold">Health</p>
-            {/* <p className="w-24 font-bold">WS</p> */}
             <p className="w-48 font-bold">Life Sustain</p>
-            {/* <p className="w-24 font-bold">Healing</p>
-            <p className="w-64 font-bold">Major ID</p> */}
+            <p className="w-48 font-bold">Other</p>
+            <p className="w-48 font-bold">Minor</p>
           </div>
           {
             indices ? indices.map((index) => {
