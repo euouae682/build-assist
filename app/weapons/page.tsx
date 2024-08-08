@@ -285,15 +285,15 @@ export default function Home() {
         <div className="border border-slate-600 text-sm">
           <div className="m-2 flex">
             <p className="w-64 font-bold">Name</p>
-            <p className="w-32 font-bold">Base DPS</p>
-            <p className="w-32 font-bold">Spell</p>
-            <p className="w-32 font-bold">Melee</p>
+            <p className="w-48 font-bold">Base DPS</p>
+            <p className="w-48 font-bold">Spell</p>
+            <p className="w-48 font-bold">Melee</p>
             {/* <p className="w-32 font-bold">Poison</p> */}
-            <p className="w-32 font-bold">Mana</p>
-            <p className="w-24 font-bold">SP</p>
-            <p className="w-32 font-bold">Health</p>
+            <p className="w-48 font-bold">Mana</p>
+            <p className="w-32 font-bold">SP</p>
+            <p className="w-48 font-bold">Health</p>
             {/* <p className="w-24 font-bold">WS</p> */}
-            <p className="w-32 font-bold">Life Sustain</p>
+            <p className="w-48 font-bold">Life Sustain</p>
             {/* <p className="w-24 font-bold">Healing</p>
             <p className="w-64 font-bold">Major ID</p> */}
           </div>
