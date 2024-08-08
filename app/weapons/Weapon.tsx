@@ -3,11 +3,10 @@ import { useState } from "react";
 
 type ItemProps = {
     toggleBg: boolean;
-    baseDps: number;
     index: Indices;
 }
 
-export default function Item({ toggleBg, baseDps, index }: ItemProps) {
+export default function Item({ toggleBg, index }: ItemProps) {
     const [showDetails, setShowDetails] = useState(false);
 
     const getRarityColor = (rarity: string): string => {
@@ -61,16 +60,16 @@ export default function Item({ toggleBg, baseDps, index }: ItemProps) {
     return (
         <section style={{backgroundColor: toggleBg ? '#f0f0f0' : '#ffffff'}} className="p-2 text-sm">
             <div className="flex">
-                <p style={{color: getRarityColor(index.rarity)}} className="w-64 cursor-pointer hover:opacity-40 transition-all" onClick={onNameClick}>Lv. {index.level} { index.name }</p>
-                <p style={{color: getSignColor(baseDps)}} className="w-48">{ baseDps.toFixed(2) }</p>
-                <p style={{color: getSignColor(index.spell[0])}} className="w-48">{ index.spell[0].toFixed(2) }</p>
-                <p style={{color: getSignColor(index.melee[0])}} className="w-48">{ index.melee[0].toFixed(2) } <i className="text-black">{getMeleeType(index.melee[1])}</i></p>
-                <p style={{color: getSignColor(index.mana[0])}} className="w-48">{ index.mana[0].toFixed(2) }<strong className="text-red-600">{index.mana[1] === "pct" ? "*" : ""}</strong></p>
-                <p style={{color: getSignColor(index.skillPoints[0])}} className="w-24">{ index.skillPoints[0] }<strong className="text-red-600">{index.skillPoints[1] === "neg" ? "*" : ""}</strong></p>
-                <p style={{color: getSignColor(index.health[0])}} className="w-48">{ index.health[0] }<strong className="text-red-600">{index.health[1] === "rol" ? "*" : ""}</strong></p>
-                <p style={{color: getSignColor(index.life[0])}} className="w-48">{ index.life[0].toFixed(2) }<strong className="text-red-600">{index.life[1] === "pct" ? "*" : ""}</strong></p>
-                <p className="w-48">111</p>
-                <p className="w-48">111</p>
+                <p style={{color: getRarityColor(index.general.rarity)}} className="w-64 cursor-pointer hover:opacity-40 transition-all" onClick={onNameClick}>Lv. {index.general.level} { index.general.name }</p>
+                <p style={{color: getSignColor(index.baseDps != undefined ? index.baseDps.value : -1)}} className="w-48">{ index.baseDps != undefined ? index.baseDps.value.toFixed(2) : -1 }</p>
+                <p style={{color: getSignColor(index.spell.value)}} className="w-48">{ index.spell.value.toFixed(2) }</p>
+                <p style={{color: getSignColor(index.melee.value)}} className="w-48">{ index.melee.value.toFixed(2) }</p>
+                <p style={{color: getSignColor(index.mana.value)}} className="w-48">{ index.mana.value.toFixed(2) }</p>
+                <p style={{color: getSignColor(index.skillPoints.value)}} className="w-24">{ index.skillPoints.value }</p>
+                <p style={{color: getSignColor(index.health.value)}} className="w-48">{ index.health.value }</p>
+                <p style={{color: getSignColor(index.life.value)}} className="w-48">{ index.life.value.toFixed(2) }</p>
+                <p className="w-48">{ index.other.value }</p>
+                <p className="w-48">{ index.minor.value }</p>
             </div>
             { showDetails &&
             <div className="pt-2 flex">

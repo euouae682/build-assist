@@ -21,13 +21,13 @@ export default function Home() {
   const [costs, setCosts] = useState<[number, number, number, number]>([35, 20, 35, 30]);
 
   // Form state variables - Sort by
-  const [sortBy, setSortBy] = useState('dps');
+  const [sortBy, setSortBy] = useState('baseDps');
   const [showAmt, setShowAmt] = useState(100);
 
   // Data state variables
   const [itemsList, setItemsList] = useState<ItemList | null>(null);
   const [weaponsList, setWeaponsList] = useState<string[] | null>(null);
-  const [indices, setIndices] = useState<[number, Indices][] | null>(null);
+  const [indices, setIndices] = useState<Indices[] | null>(null);
 
   useEffect(() => {
     getItems();
@@ -71,14 +71,14 @@ export default function Home() {
   }
 
   const calculateWeaponBoosts = (): void => {
-    let indicesList: [number, Indices][] = [];
+    let indicesList: Indices[] = [];
     if (itemsList != null && weaponsList != null) {
       weaponsList.map((weaponName) => {
         indicesList.push(getWeaponIndices(weaponName, itemsList[weaponName], powderTier, useSteals, cps, spellCycle, costs, sp));
       })
     }
 
-    if (sortBy === "dps" || sortBy === "spell" || sortBy === "melee"
+    if (sortBy === "baseDps" || sortBy === "spell" || sortBy === "melee"
       || sortBy === "mana" || sortBy === "skillPoints" || sortBy === "health"
       || sortBy === "life") {
       sortList(indicesList, sortBy);
@@ -86,15 +86,17 @@ export default function Home() {
     setIndices(indicesList.slice(0, showAmt));
   }
 
-  const sortList = (list: [number, Indices][], key: "dps" | "spell" | "melee" | "mana" | "skillPoints" | "health" | "life"): [number, Indices][] => {
+  const sortList = (list: Indices[], key: "baseDps" | "spell" | "melee" | "mana" | "skillPoints" | "health" | "life"): Indices[] => {
     if (list !== null) {
-      if (key === "dps") {
-        return list.sort((index1, index2) => index2[0] - index1[0])
+      if (key == "baseDps") {
+        return list.sort((index1, index2) => {
+          if (index1.baseDps != undefined && index2.baseDps != undefined) {
+            return index2.baseDps.value - index1.baseDps.value;
+          }
+          return 0;
+        })
       }
-      // else if (key === "major") {
-      //   return list.sort((index1, index2) => index2[1]["major"][0].localeCompare(index1[1]["major"][0]))
-      // }
-      return list.sort((index1, index2) => index2[1][key][0] - index1[1][key][0]);
+      return list.sort((index1, index2) => index2[key].value - index1[key].value);
     }
     return [];
   }
@@ -251,7 +253,7 @@ export default function Home() {
         <div>
           <label htmlFor="playstyle">Sort By: </label>
           <select id="sortby" name="sortby" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onSortByChange}>
-            <option value="dps">Base DPS</option>
+            <option value="baseDps">Base DPS</option>
             <option value="spell">Spell Damage</option>
             <option value="melee">Melee Damage</option>
             {/* <option value="poison">Poison</option> */}
@@ -298,10 +300,9 @@ export default function Home() {
           {
             indices ? indices.map((index) => {
               return <Weapon 
-                key={index[1].name}
+                key={index.general.name}
                 toggleBg={indices.indexOf(index) % 2 === 1}
-                baseDps={index[0]}
-                index={index[1]} />
+                index={index} />
             }) : <></>
           }
         </div>

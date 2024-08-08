@@ -46,13 +46,30 @@ export type Damage = {
 }
 
 export type Indices = {
-  level: number,
+  general: GeneralIndex,
+  baseDps?: Index,
+  spell: Index,
+  melee: Index,
+  mana: Index,
+  skillPoints: Index
+  health: Index,
+  life: Index,
+  other: Index,
+  minor: Index
+}
+
+type GeneralIndex = {
   name: string,
+  level: number,
   rarity: string,
-  spell: [number],
-  melee: [number, string],
-  mana: [number, string],
-  skillPoints: [number, string]
-  health: [number, string],
-  life: [number, string],
+  details: {
+    [key: string]: string
+  }
+}
+
+type Index = {
+  value: number,
+  details: {
+    [key: string]: string
+  }
 }

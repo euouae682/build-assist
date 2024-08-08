@@ -138,7 +138,7 @@ export default function Home() {
       // if (key === "major") {
       //   return list.sort((index1, index2) => index2["major"][0].localeCompare(index1["major"][0]))
       // }
-      return list.sort((index1, index2) => index2[key][0] - index1[key][0]);
+      return list.sort((index1, index2) => index2[key].value - index1[key].value);
     }
     return [];
   }
@@ -412,7 +412,7 @@ export default function Home() {
           {
             indices ? indices.map((index) => {
               return <Item 
-                key={index.name}
+                key={index.general.name}
                 toggleBg={indices.indexOf(index) % 2 === 1}
                 index={index} />
             }) : <></>
