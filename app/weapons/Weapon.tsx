@@ -43,6 +43,16 @@ export default function Item({ toggleBg, index }: ItemProps) {
         return 'black';
     }
 
+    const getDetailWidth = (index: string): string => {
+        if (index == "name" || index == "general") {
+            return "flex flex-col w-64";
+        }
+        else if (index == "skillPoints") {
+            return "flex flex-col w-24";
+        }
+        return "flex flex-col w-48";
+    }
+
     const getMeleeType = (type: string): string => {
         if (type === "ts") {
             return "(tier)";
@@ -73,7 +83,22 @@ export default function Item({ toggleBg, index }: ItemProps) {
             </div>
             { showDetails &&
             <div className="pt-2 flex">
-                <div className="flex flex-col w-64">
+                {
+                    // Objective: map over keys in index, and then map over the details of that key
+                    // index.keys().map(
+                    //     (key) => {
+                    //         return <div key={index.general.name + key} className={getDetailWidth(key)}>
+                    //             {
+                    //                 for(key in index) {
+
+                    //                 }
+                    //             }
+                    //         </div>
+                    //     }
+                    // )
+                }
+                
+                {/* <div className="flex flex-col w-64">
                     <p>Str Req: XXX</p>
                     <p>Dex Req: XXX</p>
                     <p>Int Req: XXX</p>
@@ -156,7 +181,7 @@ export default function Item({ toggleBg, index }: ItemProps) {
                     <p>Stealing: +XXX%</p>
                     <p>Sprint: +XXX%</p>
                     <p>Sprint Regen: +XXX%</p>
-                </div>
+                </div> */}
             </div>
             }
         </section> 
