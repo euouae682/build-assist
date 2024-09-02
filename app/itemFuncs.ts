@@ -393,7 +393,7 @@ export const getGeneralDetails = (gear: WynnItem): string[] => {
         details.push("Slots: " + gear['powderSlots']);
     }
     if (gear['majorIds']) {
-        details.push("Major ID: " + gear['majorIds']["name"]);
+        details.push("Major ID: " + Object.keys(gear['majorIds'])[0]);
     }
     return details;
 }

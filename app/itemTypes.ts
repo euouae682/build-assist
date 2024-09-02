@@ -12,8 +12,7 @@ export type WynnItem = {
   type: string,
   attackSpeed: string,
   majorIds?: {
-    name: string,
-    description: string
+    [key: string]: string
   },
   base?: {
     [key: string]: {
