@@ -71,7 +71,7 @@ export default function Item({ toggleBg, index }: ItemProps) {
                 <p className="w-48">{ index.minor.value }</p>
             </div>
             { showDetails &&
-            <div className="pt-2 flex">
+            <div className="pt-2 flex text-slate-400 text-xs">
                 <div className="flex flex-col w-64">
                     <p>Str Req: XXX</p>
                     <p>Dex Req: XXX</p>

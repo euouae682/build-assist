@@ -62,14 +62,10 @@ type GeneralIndex = {
   name: string,
   level: number,
   rarity: string,
-  details: {
-    [key: string]: string
-  }
+  details: string[]
 }
 
 type Index = {
   value: number,
-  details: {
-    [key: string]: string
-  }
+  details: string[]
 }

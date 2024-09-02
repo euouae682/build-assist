@@ -363,6 +363,20 @@ export const getLifeIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs, 
     return calcLifeSustain(accumulatedIDs, steals) - calcLifeSustain(weaponIDs, steals);
 }
 
+export const getItemDetails = (gearIDs: WynnItem): string[][] => {
+    const generalDetails: string[] = [];
+    const spellDetails: string[] = [];
+    const meleeDetails: string[] = [];
+    const manaDetails: string[] = [];
+    const skillPointDetails: string[] = [];
+    const healthDetails: string[] = [];
+    const lifeDetails: string[] = [];
+    const otherDetails: string[] = [];
+    const minorDetails: string[] = [];
+
+    return [generalDetails, spellDetails, meleeDetails, manaDetails, skillPointDetails, healthDetails, lifeDetails, otherDetails, minorDetails];
+}
+
 export const getIndices = (weapon: WynnItem, powdering: string, gearName: string, gear: WynnItem, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
     const powdersToApply: Powder[] = compressPowders(powdering);
@@ -370,45 +384,46 @@ export const getIndices = (weapon: WynnItem, powdering: string, gearName: string
     const weaponIDs: IDs = weapon['identifications'] ? weapon['identifications'] : {};
     const gearIDs: IDs = gear['identifications'] ? gear['identifications'] : {};
     const accumulatedIDs: IDs = accumulateIDs(weaponIDs, gearIDs ? gearIDs : {});
+    const gearDetails: string[][] = getItemDetails(gear);
 
     return {
         general: {
             name: gearName,
             level: gear['requirements']['level'],
             rarity: gear['tier'],
-            details: {}
+            details: gearDetails[0]
         },
         spell: {
             value: getSpellIndex(powderedDamage, weaponIDs, accumulatedIDs),
-            details: {}
+            details: gearDetails[1]
         },
         melee: {
             value: getMeleeIndex(powderedDamage, weaponIDs, gearIDs, accumulatedIDs),
-            details: {}
+            details: gearDetails[2]
         },
         mana: {
             value: getManaIndex(weaponIDs, gearIDs, accumulatedIDs, steals, cps, spellCycle, costs),
-            details: {}
+            details: gearDetails[3]
         },
         skillPoints: {
             value: getSPIndex(gearIDs, sp),
-            details: {}
+            details: gearDetails[4]
         },
         health: {
             value: getHealthIndex(gear, gearIDs),
-            details: {}
+            details: gearDetails[5]
         },
         life: {
             value: getLifeIndex(weaponIDs, gearIDs, accumulatedIDs, steals),
-            details: {}
+            details: gearDetails[6]
         },
         other: {
             value: 0,
-            details: {}
+            details: gearDetails[7]
         },
         minor: {
             value: 0,
-            details: {}
+            details: gearDetails[8]
         }
     };
 }
@@ -444,49 +459,50 @@ export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTie
     const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
     const weaponIDs: IDs = weapon['identifications'] ? weapon['identifications'] : {};
     const powderStr: string = powdering === "" ? "" : `[${powdering}]`
+    const weaponDetails: string[][] = getItemDetails(weapon);
 
     return {
         general: {
             name: weaponName + " " + powderStr,
             level: weapon['requirements']['level'],
             rarity: weapon['tier'],
-            details: {}
+            details: weaponDetails[0]
         },
         baseDps: {
             value: getBaseDPS(powderedDamage),
-            details: {}
+            details: weaponDetails[1]
         },
         spell: {
             value: calcSpellDamage(powderedDamage, weaponIDs),
-            details: {}
+            details: weaponDetails[2]
         },
         melee: {
             value: calcMeleeDamage(powderedDamage, weaponIDs),
-            details: {}
+            details: weaponDetails[3]
         },
         mana: {
             value: calcManaSustain(weaponIDs, steals, cps, spellCycle, costs),
-            details: {}
+            details: weaponDetails[4]
         },
         skillPoints: {
             value: getSPIndex(weaponIDs, sp),
-            details: {}
+            details: weaponDetails[5]
         },
         health: {
             value: getIDMax(weaponIDs, 'rawHealth'),
-            details: {}
+            details: weaponDetails[6]
         },
         life: {
             value: calcLifeSustain(weaponIDs, steals),
-            details: {}
+            details: weaponDetails[7]
         },
         other: {
             value: 0,
-            details: {}
+            details: weaponDetails[8]
         },
         minor: {
             value: 0,
-            details: {}
+            details: weaponDetails[9]
         }
     };
 }
