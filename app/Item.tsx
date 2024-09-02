@@ -73,14 +73,9 @@ export default function Item({ toggleBg, index }: ItemProps) {
             { showDetails &&
             <div className="pt-2 flex text-slate-400 text-xs">
                 <div className="flex flex-col w-64">
-                    <p>Str Req: XXX</p>
-                    <p>Dex Req: XXX</p>
-                    <p>Int Req: XXX</p>
-                    <p>Def Req: XXX</p>
-                    <p>Agi Req: XXX</p>
-                    <p>Quest Req: XXXXXXXXXXXX</p>
-                    <p>Slots: XX</p>
-                    <p>Major ID: XXXXXXXXXXXX</p>
+                    { index.general.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
                 </div>
                 <div className="flex flex-col w-48">
                     <p>Spell: +XXX%, +XXXX</p>
@@ -100,19 +95,14 @@ export default function Item({ toggleBg, index }: ItemProps) {
                     <p>Speed Bonus: +XX</p>
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>Mana Regen: +XXX/5s</p>
-                    <p>Mana Steal: +XXX/3s</p>
-                    <p>1st Spell: +XXXX, +XXX%</p>
-                    <p>2nd Spell: +XXXX, +XXX%</p>
-                    <p>3rd Spell: +XXXX, +XXX%</p>
-                    <p>4th Spell: +XXXX, +XXX%</p>
+                    { index.mana.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
                 </div>
                 <div className="flex flex-col w-24">
-                    <p>Str: XX</p>
-                    <p>Dex: XX</p>
-                    <p>Int: XX</p>
-                    <p>Def: XX</p>
-                    <p>Agi: XX</p>
+                    { index.skillPoints.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
                 </div>
                 <div className="flex flex-col w-48">
                     <p>Base HP: XXXXX</p>
@@ -128,23 +118,14 @@ export default function Item({ toggleBg, index }: ItemProps) {
                     <p>Life Steal: +XXXX/3s</p>
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>Poison: +XXXXX/3s</p>
-                    <p>Walkspeed: +XXX%</p>
-                    <p>Jump Height: +XX</p>
-                    <p>Healing Eff: +XXX%</p>
-                    <p>Knockback: +XXX%</p>
-                    <p>Slow Enemy: +XXX%</p>
-                    <p>Weaken Enemy: +XXX%</p>
-                    <p>XP Bonus: +XXX%</p>
-                    <p>Loot Bonus: +XXX%</p>
+                    { index.other.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>Thorns: +XXX%</p>
-                    <p>Reflection: +XXX%</p>
-                    <p>Exploding: +XXX%</p>
-                    <p>Stealing: +XXX%</p>
-                    <p>Sprint: +XXX%</p>
-                    <p>Sprint Regen: +XXX%</p>
+                    { index.minor.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
                 </div>
             </div>
             }

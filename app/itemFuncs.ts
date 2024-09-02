@@ -355,6 +355,9 @@ export const getSPIndex = (gearIDs: IDs, sp: [boolean, boolean, boolean, boolean
 
 export const getHealthIndex = (gear: WynnItem, gearIDs: IDs): number => {
     let baseHP = 0;
+    if (gear["base"] && "health" in gear["base"] && typeof gear["base"]["health"] == "number") {
+        baseHP = gear["base"]["health"];
+    }
     const extraHP = getIDMax(gearIDs, 'rawHealth');
     return baseHP + extraHP;
 }
@@ -371,17 +374,34 @@ export const getGeneralDetails = (gear: WynnItem): string[] => {
             details.push("Str Req: " + requirements['strength']);
         }
         if ("dexterity" in requirements) {
-            details.push("Dex Req: " + requirements['strength']);
+            details.push("Dex Req: " + requirements['dexterity']);
         }
         if ("intelligence" in requirements) {
-            details.push("Int Req: " + requirements['strength']);
+            details.push("Int Req: " + requirements['intelligence']);
         }
         if ("defence" in requirements) {
-            details.push("Def Req: " + requirements['strength']);
+            details.push("Def Req: " + requirements['defence']);
         }
         if ("agility" in requirements) {
-            details.push("Agi Req: " + requirements['strength']);
+            details.push("Agi Req: " + requirements['agility']);
         }
+        if ("quest" in requirements) {
+            details.push("Quest: " + requirements['quest']);
+        }
+    }
+    if ("powderSlots" in gear) {
+        details.push("Slots: " + gear['powderSlots']);
+    }
+    if (gear['majorIds']) {
+        details.push("Major ID: " + gear['majorIds']["name"]);
+    }
+    return details;
+}
+
+export const getBaseDPSDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    if (gear.type == 'bow' || gear.type == 'spear' || gear.type == 'wand' || gear.type == 'dagger' || gear.type == 'relik') {
+        console.log("manipulation here");
     }
     return details;
 }
@@ -398,11 +418,40 @@ export const getMeleeDetails = (gear: WynnItem): string[] => {
 
 export const getManaDetails = (gear: WynnItem): string[] => {
     let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    if ("manaRegen" in gearIDs) {
+        details.push("Mana Regen: " + getIDMax(gearIDs, 'manaRegen') + "/5s");
+    }
+    if ("manaSteal" in gearIDs) {
+        details.push("Mana Steal: " + getIDMax(gearIDs, 'manaSteal') + "/3s");
+    }
     return details;
 }
 
 export const getSkillPointDetails = (gear: WynnItem): string[] => {
     let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    if ("rawStrength" in gearIDs) {
+        details.push("Str: " + gearIDs['rawStrength']);
+    }
+    if ("rawDexterity" in gearIDs) {
+        details.push("Dex: " + gearIDs['rawDexterity']);
+    }
+    if ("rawIntelligence" in gearIDs) {
+        details.push("Int: " + gearIDs['rawIntelligence']);
+    }
+    if ("rawDefence" in gearIDs) {
+        details.push("Def: " + gearIDs['rawDefence']);
+    }
+    if ("rawAgility" in gearIDs) {
+        details.push("Agi: " + gearIDs['rawAgility']);
+    }
     return details;
 }
 
@@ -418,17 +467,71 @@ export const getLifeDetails = (gear: WynnItem): string[] => {
 
 export const getOtherDetails = (gear: WynnItem): string[] => {
     let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    if ("poison" in gearIDs) {
+        details.push("Poison: " + getIDMax(gearIDs, 'poison') + "/3s");
+    }
+    if ("walkSpeed" in gearIDs) {
+        details.push("Walkspeed: " + getIDMax(gearIDs, 'walkSpeed') + "%");
+    }
+    if ("jumpHeight" in gearIDs) {
+        details.push("Jump Height: " + getIDMax(gearIDs, 'jumpHeight') + "%");
+    }
+    if ("healingEfficiency" in gearIDs) {
+        details.push("Healing: " + getIDMax(gearIDs, 'healingEfficiency') + "%");
+    }
+    if ("knockback" in gearIDs) {
+        details.push("Knockback: " + getIDMax(gearIDs, 'knockback') + "%");
+    }
+    if ("slowEnemy" in gearIDs) {
+        details.push("Slow: " + getIDMax(gearIDs, 'slowEnemy') + "%");
+    }
+    if ("weakenEnemy" in gearIDs) {
+        details.push("Weaken: " + getIDMax(gearIDs, 'weakenEnemy') + "%");
+    }
+    if ("xpBonus" in gearIDs) {
+        details.push("XP Bonus: " + getIDMax(gearIDs, 'xpBonus') + "%");
+    }
+    if ("lootBonus" in gearIDs) {
+        details.push("Loot Bonus: " + getIDMax(gearIDs, 'lootBonus') + "%");
+    }
     return details;
 }
 
 export const getMinorDetails = (gear: WynnItem): string[] => {
     let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    if ("thorns" in gearIDs) {
+        details.push("Thorns: " + getIDMax(gearIDs, 'thorns') + "%");
+    }
+    if ("reflection" in gearIDs) {
+        details.push("Reflection: " + getIDMax(gearIDs, 'reflection') + "%");
+    }
+    if ("exploding" in gearIDs) {
+        details.push("Exploding: " + getIDMax(gearIDs, 'exploding') + "%");
+    }
+    if ("stealing" in gearIDs) {
+        details.push("Stealing: " + getIDMax(gearIDs, 'stealing') + "%");
+    }
+    if ("sprint" in gearIDs) {
+        details.push("Sprint: " + getIDMax(gearIDs, 'sprint') + "%");
+    }
+    if ("sprintRegen" in gearIDs) {
+        details.push("Sprint Regen: " + getIDMax(gearIDs, 'sprintRegen') + "%");
+    }
     return details;
 }
 
 export const getItemDetails = (gear: WynnItem): string[][] => {
     return [
         getGeneralDetails(gear), 
+        getBaseDPSDetails(gear),
         getSpellDetails(gear), 
         getMeleeDetails(gear), 
         getManaDetails(gear), 
@@ -458,35 +561,35 @@ export const getIndices = (weapon: WynnItem, powdering: string, gearName: string
         },
         spell: {
             value: getSpellIndex(powderedDamage, weaponIDs, accumulatedIDs),
-            details: gearDetails[1]
+            details: gearDetails[2]
         },
         melee: {
             value: getMeleeIndex(powderedDamage, weaponIDs, gearIDs, accumulatedIDs),
-            details: gearDetails[2]
+            details: gearDetails[3]
         },
         mana: {
             value: getManaIndex(weaponIDs, gearIDs, accumulatedIDs, steals, cps, spellCycle, costs),
-            details: gearDetails[3]
+            details: gearDetails[4]
         },
         skillPoints: {
             value: getSPIndex(gearIDs, sp),
-            details: gearDetails[4]
+            details: gearDetails[5]
         },
         health: {
             value: getHealthIndex(gear, gearIDs),
-            details: gearDetails[5]
+            details: gearDetails[6]
         },
         life: {
             value: getLifeIndex(weaponIDs, gearIDs, accumulatedIDs, steals),
-            details: gearDetails[6]
+            details: gearDetails[7]
         },
         other: {
-            value: gearDetails[7].length,
-            details: gearDetails[7]
+            value: gearDetails[8].length,
+            details: gearDetails[8]
         },
         minor: {
             value: gearDetails[8].length,
-            details: gearDetails[8]
+            details: gearDetails[9]
         }
     };
 }
