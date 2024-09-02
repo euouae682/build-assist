@@ -400,8 +400,8 @@ export const getGeneralDetails = (gear: WynnItem): string[] => {
 
 export const getBaseDPSDetails = (gear: WynnItem): string[] => {
     let details: string[] = [];
-    if (gear.type == 'bow' || gear.type == 'spear' || gear.type == 'wand' || gear.type == 'dagger' || gear.type == 'relik') {
-        console.log("manipulation here");
+    if ('weaponType' in gear) {
+        details.push("Base Atk: " + gear["attackSpeed"]);
     }
     return details;
 }
