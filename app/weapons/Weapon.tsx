@@ -68,9 +68,9 @@ export default function Item({ toggleBg, index }: ItemProps) {
     }
 
     return (
-        <section style={{backgroundColor: toggleBg ? '#f0f0f0' : '#ffffff'}} className="p-2 text-sm">
+        <section style={{backgroundColor: toggleBg ? '#f0f0f0' : '#ffffff'}} className="p-2 text-[12px]">
             <div className="flex">
-                <p style={{color: getRarityColor(index.general.rarity)}} className="w-64 cursor-pointer hover:opacity-40 transition-all" onClick={onNameClick}>Lv. {index.general.level} { index.general.name }</p>
+                <p style={{color: getRarityColor(index.general.rarity)}} className="w-72 cursor-pointer hover:opacity-40 transition-all" onClick={onNameClick}>Lv. {index.general.level} { index.general.name }</p>
                 <p style={{color: getSignColor(index.baseDps != undefined ? index.baseDps.value : -1)}} className="w-48">{ index.baseDps != undefined ? index.baseDps.value.toFixed(2) : -1 }</p>
                 <p style={{color: getSignColor(index.spell.value)}} className="w-48">{ index.spell.value.toFixed(2) }</p>
                 <p style={{color: getSignColor(index.melee.value)}} className="w-48">{ index.melee.value.toFixed(2) }</p>
@@ -83,7 +83,7 @@ export default function Item({ toggleBg, index }: ItemProps) {
             </div>
             { showDetails &&
             <div className="pt-2 flex text-slate-400 text-xs">
-                <div className="flex flex-col w-64">
+                <div className="flex flex-col w-72">
                     { index.general.details.map((phrase) => {
                         return <p key={phrase}>{ phrase }</p>
                     }) }

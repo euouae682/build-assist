@@ -287,7 +287,7 @@ export default function Home() {
         <h2 className="text-xl font-bold">Results</h2>
         <div className="border border-slate-600 text-sm">
           <div className="m-2 flex">
-            <p className="w-64 font-bold">Name</p>
+            <p className="w-72 font-bold">Name</p>
             <p className="w-48 font-bold">Base DPS</p>
             <p className="w-48 font-bold">Spell</p>
             <p className="w-48 font-bold">Melee</p>
