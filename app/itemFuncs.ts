@@ -439,9 +439,9 @@ export const getSpellDetails = (gear: WynnItem): string[] => {
     let details = [
         getPhrase(gearIDs, "damage", "Damage", true),
         getPhrase(gearIDs, "spellDamage", "Spell", true),
-        getPhrase(gearIDs, "neutralDamage", "Neut.", true),
+        getPhrase(gearIDs, "neutralDamage", "Neutral", true),
         getPhrase(gearIDs, "neutralSpellDamage", "Neut. Spell", true),
-        getPhrase(gearIDs, "elementalDamage", "Elemt.", true),
+        getPhrase(gearIDs, "elementalDamage", "Elemental", true),
         getPhrase(gearIDs, "elementalSpellDamage", "Elemt. Spell", true),
         getPhrase(gearIDs, "earthDamage", "Earth", true),
         getPhrase(gearIDs, "earthSpellDamage", "Earth Spell", true),
@@ -466,9 +466,9 @@ export const getMeleeDetails = (gear: WynnItem): string[] => {
     let details = [
         getPhrase(gearIDs, "damage", "Damage", true),
         getPhrase(gearIDs, "mainAttackDamage", "Melee", true),
-        getPhrase(gearIDs, "neutralDamage", "Neut.", true),
+        getPhrase(gearIDs, "neutralDamage", "Neutral", true),
         getPhrase(gearIDs, "neutralMainAttackDamage", "Neut. Melee", true),
-        getPhrase(gearIDs, "elementalDamage", "Elemt.", true),
+        getPhrase(gearIDs, "elementalDamage", "Elemental", true),
         getPhrase(gearIDs, "elementalMainAttackDamage", "Elemt. Melee", true),
         getPhrase(gearIDs, "earthDamage", "Earth", true),
         getPhrase(gearIDs, "earthMainAttackDamage", "Earth Melee", true),
@@ -693,7 +693,7 @@ export const getIndices = (weapon: WynnItem, powdering: string, gearName: string
         general: {
             name: gearName,
             level: gear['requirements']['level'],
-            rarity: gear['tier'],
+            rarity: gear['rarity'],
             details: gearDetails[0]
         },
         spell: {
@@ -740,22 +740,22 @@ export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTie
         powdering = "";
     }
     else if (baseDamage['damages']['thunder']['max'] > 0) {
-        powdering = `t${powderTier}`.repeat(powderSlots);
+        powdering = `t${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
     else if (baseDamage['damages']['earth']['max'] > 0) {
-        powdering = `e${powderTier}`.repeat(powderSlots);
+        powdering = `e${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
     else if (baseDamage['damages']['air']['max'] > 0) {
-        powdering = `a${powderTier}`.repeat(powderSlots);
+        powdering = `a${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
     else if (baseDamage['damages']['fire']['max'] > 0) {
-        powdering = `f${powderTier}`.repeat(powderSlots);
+        powdering = `f${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
     else if (baseDamage['damages']['water']['max'] > 0) {
-        powdering = `w${powderTier}`.repeat(powderSlots);
+        powdering = `w${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
     else {
-        powdering = `t${powderTier}`.repeat(powderSlots);
+        powdering = `t${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
 
     const powdersToApply: Powder[] = compressPowders(powdering);
@@ -768,7 +768,7 @@ export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTie
         general: {
             name: weaponName + " " + powderStr,
             level: weapon['requirements']['level'],
-            rarity: weapon['tier'],
+            rarity: weapon['rarity'],
             details: weaponDetails[0]
         },
         baseDps: {

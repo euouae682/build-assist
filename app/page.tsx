@@ -46,21 +46,18 @@ export default function Home() {
       setGearList(Object.entries(itemsList)
         .filter((item) => {
           if (gearType === 'all') {
-            return ('type' in item[1] && (item[1]['type'] === 'helmet' 
-              || item[1]['type'] === 'chestplate' 
-              || item[1]['type'] === 'leggings' 
-              || item[1]['type'] === 'boots')) || ('accessoryType' in item[1]);
+            return ('type' in item[1] && (item[1]['type'] === 'armour' 
+              || item[1]['type'] === 'accessory'));
           }
           else if (gearType === 'armor') {
-            return 'type' in item[1] && (item[1]['type'] === 'helmet' 
-              || item[1]['type'] === 'chestplate' 
-              || item[1]['type'] === 'leggings' 
-              || item[1]['type'] === 'boots');
+            return 'type' in item[1] && (item[1]['type'] === 'armour');
           }
           else if (gearType === 'accessories') {
             return 'accessoryType' in item[1];
           }
-          return ('type' in item[1] && item[1]['type'] === gearType) || ('accessoryType' in item[1] && item[1]['accessoryType'] === gearType);
+          return (('weaponType' in item[1] && item[1]['weaponType'] === gearType) || 
+          ('armourType' in item[1] && item[1]['armourType'] === gearType) ||
+          ('accessoryType' in item[1] && item[1]['accessoryType'] === gearType));
         })
         .filter((item) => {
           if (item[1]['requirements']['level'] > levelReq) {
@@ -96,7 +93,7 @@ export default function Home() {
   const filterWeapons = (type: string): void => {
     if (itemsList !== null) {
       setWeaponsList(Object.entries(itemsList)
-        .filter((item) => 'type' in item[1] && item[1]['type'] === type)
+        .filter((item) => 'weaponType' in item[1] && item[1]['weaponType'] === type)
         .map((item) => item[0])
         .sort()
       );
@@ -105,7 +102,7 @@ export default function Home() {
 
   const getPowderSlots = (weapon: string): void => {
     if (itemsList !== null) {
-      if ('powderSlots' in itemsList[weapon]) {
+      if ('powderSlots' in itemsList[weapon] && itemsList[weapon]['powderSlots'] != undefined) {
         setPowderSlots(itemsList[weapon]['powderSlots'])
       }
       else {

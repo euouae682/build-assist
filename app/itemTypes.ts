@@ -7,8 +7,8 @@ export type IDs = {
 }
 
 export type WynnItem = {
-  tier: string,
-  powderSlots: number,
+  rarity: string,
+  powderSlots?: number,
   type: string,
   attackSpeed: string,
   majorIds?: {
