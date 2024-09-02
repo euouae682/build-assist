@@ -173,6 +173,7 @@ export default function Home() {
       <div>
         <h1 className="text-3xl font-bold leading-12">Wynncraft Build Assist</h1>
         <h2 className="text-2xl">a goofy web app by euouae</h2>
+        <a className="text-slate-400 hover:text-slate-600 cursor-pointer transition w-56" href="/">To Gear Analysis Page</a>
       </div>
       <form className="flex flex-col gap-2 w-96" onSubmit={onFormSubmit}>
         <h2 className="text-xl font-bold">Class/Weapon</h2>

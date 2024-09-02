@@ -264,6 +264,7 @@ export default function Home() {
             </ul>
           </p> : <></>
         }
+        <a className="text-slate-400 hover:text-slate-600 cursor-pointer transition w-56" href="/weapons">To Weapon Analysis Page</a>
       </div>
       <form className="flex flex-col gap-2 w-96" onSubmit={onFormSubmit}>
         <h2 className="text-xl font-bold">Class/Weapon</h2>
