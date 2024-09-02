@@ -8,12 +8,12 @@ const getDamages = (weapon: WynnItem): Damage => {
         return {
             baseAtkMult: ATK_MULTIPLIERS[weapon["attackSpeed"]],
             damages: {
-                neutral: 'damage' in base && typeof base['damage'] !== "number" ? base['damage'] : {'min': 0, 'max': 0},
-                earth: 'earthDamage' in base && typeof base['earthDamage'] !== "number" ? base['earthDamage'] : {'min': 0, 'max': 0},
-                thunder: 'thunderDamage' in base && typeof base['thunderDamage'] !== "number" ? base['thunderDamage'] : {'min': 0, 'max': 0},
-                water: 'waterDamage' in base && typeof base['waterDamage'] !== "number" ? base['waterDamage'] : {'min': 0, 'max': 0},
-                fire: 'fireDamage' in base && typeof base['fireDamage'] !== "number" ? base['fireDamage'] : {'min': 0, 'max': 0},
-                air: 'airDamage' in base && typeof base['airDamage'] !== "number" ? base['airDamage'] : {'min': 0, 'max': 0}
+                neutral: 'baseDamage' in base && typeof base['baseDamage'] !== "number" ? base['baseDamage'] : {'min': 0, 'max': 0},
+                earth: 'baseEarthDamage' in base && typeof base['baseEarthDamage'] !== "number" ? base['baseEarthDamage'] : {'min': 0, 'max': 0},
+                thunder: 'baseThunderDamage' in base && typeof base['baseThunderDamage'] !== "number" ? base['baseThunderDamage'] : {'min': 0, 'max': 0},
+                water: 'baseWaterDamage' in base && typeof base['baseWaterDamage'] !== "number" ? base['baseWaterDamage'] : {'min': 0, 'max': 0},
+                fire: 'baseFireDamage' in base && typeof base['baseFireDamage'] !== "number" ? base['baseFireDamage'] : {'min': 0, 'max': 0},
+                air: 'baseAirDamage' in base && typeof base['baseAirDamage'] !== "number" ? base['baseAirDamage'] : {'min': 0, 'max': 0}
             }
         }
     }

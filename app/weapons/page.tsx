@@ -37,7 +37,7 @@ export default function Home() {
     if (itemsList !== null) {
       setWeaponsList(Object.entries(itemsList)
         .filter((item) => {
-          return 'type' in item[1] && item[1]['type'] === weaponType
+          return 'weaponType' in item[1] && item[1]['weaponType'] === weaponType
         })
         .filter((item) => {
           if (item[1]['requirements']['level'] > levelReq) {
