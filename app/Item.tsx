@@ -78,21 +78,14 @@ export default function Item({ toggleBg, index }: ItemProps) {
                     }) }
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>Spell: +XXX%, +XXXX</p>
-                    <p>Elemt. Spell: XX%, XX</p>
-                    <p>Thunder Spell: +XXX%, +XXXX</p>
-                    <p>Thunder: +XXX%, +XXXX</p>
-                    <p>Fire: XX%, XX</p>
-                    <p>Air: XXX</p>
+                    { index.spell.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>Melee: XX%, XX</p>
-                    <p>Elemt. Melee: XX%, XX</p>
-                    <p>Earth: -XX%</p>
-                    <p>Thunder Melee: XXX</p>
-                    <p>Fire: XX%, XX</p>
-                    <p>Air Melee: XXX</p>
-                    <p>Speed Bonus: +XX</p>
+                    { index.melee.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
                 </div>
                 <div className="flex flex-col w-48">
                     { index.mana.details.map((phrase) => {
@@ -105,17 +98,14 @@ export default function Item({ toggleBg, index }: ItemProps) {
                     }) }
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>Base HP: XXXXX</p>
-                    <p>Bonus HP: +XXXXX</p>
-                    <p>Earth Def: +XXXX, +XXX%</p>
-                    <p>Thunder Def: +XXXX, +XXX%</p>
-                    <p>Water Def: +XXXX, +XXX%</p>
-                    <p>Fire Def: +XXXX, +XXX%</p>
-                    <p>Air Def: +XXXX, +XXX%</p>
+                    { index.health.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
                 </div>
                 <div className="flex flex-col w-48">
-                    <p>HP Regen: +XXX, +XXX%</p>
-                    <p>Life Steal: +XXXX/3s</p>
+                    { index.life.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
                 </div>
                 <div className="flex flex-col w-48">
                     { index.other.details.map((phrase) => {

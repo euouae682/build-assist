@@ -406,22 +406,100 @@ export const getBaseDPSDetails = (gear: WynnItem): string[] => {
     return details;
 }
 
+const getPhrase = (gearIDs: IDs, name: string, displayName: string, isDamage: boolean): string => {
+    let pctVal = 0;
+    let rawVal = 0;
+    if (name in gearIDs) {
+        pctVal = getIDMax(gearIDs, name);
+    }
+    if ("raw" + name.charAt(0).toUpperCase() + name.slice(1) in gearIDs) {
+        rawVal = getIDMax(gearIDs, "raw" + name.charAt(0).toUpperCase() + name.slice(1));
+    }
+    else if (name == "healthRegen" && name + "Raw" in gearIDs) {
+        rawVal = getIDMax(gearIDs, name + "Raw");
+    }
+
+    if (pctVal != 0 && rawVal != 0) {
+        return displayName + ": " + (isDamage ? pctVal + "%, " + rawVal : rawVal + ", " + pctVal + "%");
+    }
+    else if (pctVal != 0) {
+        return displayName + ": " + pctVal + "%";
+    }
+    else if (rawVal != 0) {
+        return displayName + ": " + rawVal;
+    }
+    return "";
+}
+
 export const getSpellDetails = (gear: WynnItem): string[] => {
-    let details: string[] = [];
-    return details;
-}
-
-export const getMeleeDetails = (gear: WynnItem): string[] => {
-    let details: string[] = [];
-    return details;
-}
-
-export const getManaDetails = (gear: WynnItem): string[] => {
-    let details: string[] = [];
     let gearIDs: IDs = {};
     if ("identifications" in gear) {
         gearIDs = gear['identifications'];
     }
+    let details = [
+        getPhrase(gearIDs, "damage", "Damage", true),
+        getPhrase(gearIDs, "spellDamage", "Spell", true),
+        getPhrase(gearIDs, "neutralDamage", "Neut.", true),
+        getPhrase(gearIDs, "neutralSpellDamage", "Neut. Spell", true),
+        getPhrase(gearIDs, "elementalDamage", "Elemt.", true),
+        getPhrase(gearIDs, "elementalSpellDamage", "Elemt. Spell", true),
+        getPhrase(gearIDs, "earthDamage", "Earth", true),
+        getPhrase(gearIDs, "earthSpellDamage", "Earth Spell", true),
+        getPhrase(gearIDs, "thunderDamage", "Thunder", true),
+        getPhrase(gearIDs, "thunderSpellDamage", "Thunder Spell", true),
+        getPhrase(gearIDs, "waterDamage", "Water", true),
+        getPhrase(gearIDs, "waterSpellDamage", "Water Spell", true),
+        getPhrase(gearIDs, "fireDamage", "Fire", true),
+        getPhrase(gearIDs, "fireSpellDamage", "Fire Spell", true),
+        getPhrase(gearIDs, "airDamage", "Air", true),
+        getPhrase(gearIDs, "airSpellDamage", "Air Spell", true)
+    ]
+    details.filter((phrase) => phrase != "");
+    return details;
+}
+
+export const getMeleeDetails = (gear: WynnItem): string[] => {
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    let details = [
+        getPhrase(gearIDs, "damage", "Damage", true),
+        getPhrase(gearIDs, "mainAttackDamage", "Melee", true),
+        getPhrase(gearIDs, "neutralDamage", "Neut.", true),
+        getPhrase(gearIDs, "neutralMainAttackDamage", "Neut. Melee", true),
+        getPhrase(gearIDs, "elementalDamage", "Elemt.", true),
+        getPhrase(gearIDs, "elementalMainAttackDamage", "Elemt. Melee", true),
+        getPhrase(gearIDs, "earthDamage", "Earth", true),
+        getPhrase(gearIDs, "earthMainAttackDamage", "Earth Melee", true),
+        getPhrase(gearIDs, "thunderDamage", "Thunder", true),
+        getPhrase(gearIDs, "thunderMainAttackDamage", "Thunder Melee", true),
+        getPhrase(gearIDs, "waterDamage", "Water", true),
+        getPhrase(gearIDs, "waterMainAttackDamage", "Water Melee", true),
+        getPhrase(gearIDs, "fireDamage", "Fire", true),
+        getPhrase(gearIDs, "fireMainAttackDamage", "Fire Melee", true),
+        getPhrase(gearIDs, "airDamage", "Air", true),
+        getPhrase(gearIDs, "airMainAttackDamage", "Air Melee", true)
+    ]
+    details.filter((phrase) => phrase != "");
+    if ("rawAttackSpeed" in gearIDs) {
+        details.push("Atk Speed: " + getIDMax(gearIDs, 'rawAttackSpeed'));
+    }
+    return details;
+}
+
+export const getManaDetails = (gear: WynnItem): string[] => {
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    let details = [
+        getPhrase(gearIDs, "1stSpellCost", "1st Cost", false),
+        getPhrase(gearIDs, "2ndSpellCost", "2nd Cost", false),
+        getPhrase(gearIDs, "3rdSpellCost", "3rd Cost", false),
+        getPhrase(gearIDs, "4thSpellCost", "4th Cost", false),
+    ]
+    details.filter((phrase) => phrase != "");
     if ("manaRegen" in gearIDs) {
         details.push("Mana Regen: " + getIDMax(gearIDs, 'manaRegen') + "/5s");
     }
@@ -455,13 +533,72 @@ export const getSkillPointDetails = (gear: WynnItem): string[] => {
     return details;
 }
 
+const getDefPhrase = (gear: WynnItem, gearIDs: IDs, name: string, displayName: string): string => {
+    let rawVal = 0;
+    let pctVal = 0;
+    const baseString = "base" + name.charAt(0).toUpperCase() + name.slice(1);
+    if ("base" in gear && gear["base"] && baseString in gear["base"] && typeof gear["base"][baseString] == "number") {
+        rawVal = gear["base"][baseString];
+    }
+    if (name in gearIDs) {
+        pctVal = getIDMax(gearIDs, name);
+    }
+
+    if (pctVal != 0 && rawVal != 0) {
+        return displayName + ": " + rawVal + ", " + pctVal + "%";
+    }
+    else if (pctVal != 0) {
+        return displayName + ": " + pctVal + "%";
+    }
+    else if (rawVal != 0) {
+        return displayName + ": " + rawVal;
+    }
+    return "";
+}
+
 export const getHealthDetails = (gear: WynnItem): string[] => {
     let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    if (gear["base"] && "baseHealth" in gear["base"] && typeof gear["base"]["baseHealth"] == "number") {
+        details.push("Base HP: " + gear["base"]["baseHealth"]);
+    }
+    if ("rawHealth" in gearIDs) {
+        details.push("Bonus HP: " + getIDMax(gearIDs, 'rawHealth'));
+    }
+    const defenses = [
+        getDefPhrase(gear, gearIDs, "earthDefence", "Earth Def"),
+        getDefPhrase(gear, gearIDs, "thunderDefence", "Thunder Def"),
+        getDefPhrase(gear, gearIDs, "waterDefence", "Water Def"),
+        getDefPhrase(gear, gearIDs, "fireDefence", "Fire Def"),
+        getDefPhrase(gear, gearIDs, "airDefence", "Air Def")
+    ]
+    defenses.map((phrase) => {
+        if (phrase != "") {
+            details.push(phrase);
+        }
+    })
+    if ("elementalDefence" in gearIDs) {
+        details.push("Elemt. Def: " + getIDMax(gearIDs, 'elementalDefence') + "%");
+    }
     return details;
 }
 
 export const getLifeDetails = (gear: WynnItem): string[] => {
     let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    const hpr = getPhrase(gearIDs, "healthRegen", "HP Regen", false);
+    if (hpr != "") {
+        details.push(hpr);
+    }
+    if ("lifeSteal" in gearIDs) {
+        details.push("Life Steal: " + getIDMax(gearIDs, 'lifeSteal') + "/3s");
+    }
     return details;
 }
 
@@ -478,7 +615,7 @@ export const getOtherDetails = (gear: WynnItem): string[] => {
         details.push("Walkspeed: " + getIDMax(gearIDs, 'walkSpeed') + "%");
     }
     if ("jumpHeight" in gearIDs) {
-        details.push("Jump Height: " + getIDMax(gearIDs, 'jumpHeight') + "%");
+        details.push("Jump Height: " + getIDMax(gearIDs, 'jumpHeight'));
     }
     if ("healingEfficiency" in gearIDs) {
         details.push("Healing: " + getIDMax(gearIDs, 'healingEfficiency') + "%");
@@ -588,7 +725,7 @@ export const getIndices = (weapon: WynnItem, powdering: string, gearName: string
             details: gearDetails[8]
         },
         minor: {
-            value: gearDetails[8].length,
+            value: gearDetails[9].length,
             details: gearDetails[9]
         }
     };
