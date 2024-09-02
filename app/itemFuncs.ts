@@ -363,18 +363,81 @@ export const getLifeIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs, 
     return calcLifeSustain(accumulatedIDs, steals) - calcLifeSustain(weaponIDs, steals);
 }
 
-export const getItemDetails = (gear: WynnItem): string[][] => {
-    const generalDetails: string[] = [];
-    const spellDetails: string[] = [];
-    const meleeDetails: string[] = [];
-    const manaDetails: string[] = [];
-    const skillPointDetails: string[] = [];
-    const healthDetails: string[] = [];
-    const lifeDetails: string[] = [];
-    const otherDetails: string[] = [];
-    const minorDetails: string[] = [];
+export const getGeneralDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    if ("requirements" in gear) {
+        const requirements = gear['requirements'];
+        if ("strength" in requirements) {
+            details.push("Str Req: " + requirements['strength']);
+        }
+        if ("dexterity" in requirements) {
+            details.push("Dex Req: " + requirements['strength']);
+        }
+        if ("intelligence" in requirements) {
+            details.push("Int Req: " + requirements['strength']);
+        }
+        if ("defence" in requirements) {
+            details.push("Def Req: " + requirements['strength']);
+        }
+        if ("agility" in requirements) {
+            details.push("Agi Req: " + requirements['strength']);
+        }
+    }
+    return details;
+}
 
-    return [generalDetails, spellDetails, meleeDetails, manaDetails, skillPointDetails, healthDetails, lifeDetails, otherDetails, minorDetails];
+export const getSpellDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    return details;
+}
+
+export const getMeleeDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    return details;
+}
+
+export const getManaDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    return details;
+}
+
+export const getSkillPointDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    return details;
+}
+
+export const getHealthDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    return details;
+}
+
+export const getLifeDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    return details;
+}
+
+export const getOtherDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    return details;
+}
+
+export const getMinorDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    return details;
+}
+
+export const getItemDetails = (gear: WynnItem): string[][] => {
+    return [
+        getGeneralDetails(gear), 
+        getSpellDetails(gear), 
+        getMeleeDetails(gear), 
+        getManaDetails(gear), 
+        getSkillPointDetails(gear), 
+        getHealthDetails(gear), 
+        getLifeDetails(gear), 
+        getOtherDetails(gear), 
+        getMinorDetails(gear)
+    ];
 }
 
 export const getIndices = (weapon: WynnItem, powdering: string, gearName: string, gear: WynnItem, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
@@ -418,11 +481,11 @@ export const getIndices = (weapon: WynnItem, powdering: string, gearName: string
             details: gearDetails[6]
         },
         other: {
-            value: 0,
+            value: gearDetails[7].length,
             details: gearDetails[7]
         },
         minor: {
-            value: 0,
+            value: gearDetails[8].length,
             details: gearDetails[8]
         }
     };
@@ -497,11 +560,11 @@ export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTie
             details: weaponDetails[7]
         },
         other: {
-            value: 0,
+            value: weaponDetails[8].length,
             details: weaponDetails[8]
         },
         minor: {
-            value: 0,
+            value: weaponDetails[9].length,
             details: weaponDetails[9]
         }
     };
