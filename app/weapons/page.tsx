@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { IDs, ItemList, Damage, Indices } from "../page";
+import { ItemList, Indices } from "../itemTypes";
 import Weapon from "./Weapon";
 import { getWeaponIndices } from "../itemFuncs";
 import { SPELL_COSTS } from "../constants";
@@ -21,13 +21,13 @@ export default function Home() {
   const [costs, setCosts] = useState<[number, number, number, number]>([35, 20, 35, 30]);
 
   // Form state variables - Sort by
-  const [sortBy, setSortBy] = useState('dps');
+  const [sortBy, setSortBy] = useState('baseDps');
   const [showAmt, setShowAmt] = useState(100);
 
   // Data state variables
   const [itemsList, setItemsList] = useState<ItemList | null>(null);
   const [weaponsList, setWeaponsList] = useState<string[] | null>(null);
-  const [indices, setIndices] = useState<[number, Indices][] | null>(null);
+  const [indices, setIndices] = useState<Indices[] | null>(null);
 
   useEffect(() => {
     getItems();
@@ -37,7 +37,7 @@ export default function Home() {
     if (itemsList !== null) {
       setWeaponsList(Object.entries(itemsList)
         .filter((item) => {
-          return 'type' in item[1] && item[1]['type'] === weaponType
+          return 'weaponType' in item[1] && item[1]['weaponType'] === weaponType
         })
         .filter((item) => {
           if (item[1]['requirements']['level'] > levelReq) {
@@ -71,31 +71,32 @@ export default function Home() {
   }
 
   const calculateWeaponBoosts = (): void => {
-    let indicesList: [number, Indices][] = [];
+    let indicesList: Indices[] = [];
     if (itemsList != null && weaponsList != null) {
       weaponsList.map((weaponName) => {
         indicesList.push(getWeaponIndices(weaponName, itemsList[weaponName], powderTier, useSteals, cps, spellCycle, costs, sp));
       })
     }
 
-    if (sortBy === "dps" || sortBy === "spell" || sortBy === "melee" || sortBy === "poison" 
+    if (sortBy === "baseDps" || sortBy === "spell" || sortBy === "melee"
       || sortBy === "mana" || sortBy === "skillPoints" || sortBy === "health"
-      || sortBy === "life" || sortBy === "walkspeed" || sortBy === "healing"
-      || sortBy === "major") {
+      || sortBy === "life") {
       sortList(indicesList, sortBy);
     }
     setIndices(indicesList.slice(0, showAmt));
   }
 
-  const sortList = (list: [number, Indices][], key: "dps" | "spell" | "melee" | "poison" | "mana" | "skillPoints" | "health" | "life" | "walkspeed" | "healing" | "major"): [number, Indices][] => {
+  const sortList = (list: Indices[], key: "baseDps" | "spell" | "melee" | "mana" | "skillPoints" | "health" | "life"): Indices[] => {
     if (list !== null) {
-      if (key === "dps") {
-        return list.sort((index1, index2) => index2[0] - index1[0])
+      if (key == "baseDps") {
+        return list.sort((index1, index2) => {
+          if (index1.baseDps != undefined && index2.baseDps != undefined) {
+            return index2.baseDps.value - index1.baseDps.value;
+          }
+          return 0;
+        })
       }
-      else if (key === "major") {
-        return list.sort((index1, index2) => index2[1]["major"][0].localeCompare(index1[1]["major"][0]))
-      }
-      return list.sort((index1, index2) => index2[1][key][0] - index1[1][key][0]);
+      return list.sort((index1, index2) => index2[key].value - index1[key].value);
     }
     return [];
   }
@@ -172,6 +173,7 @@ export default function Home() {
       <div>
         <h1 className="text-3xl font-bold leading-12">Wynncraft Build Assist</h1>
         <h2 className="text-2xl">a goofy web app by euouae</h2>
+        <a className="text-slate-400 hover:text-slate-600 cursor-pointer transition w-56" href="/">To Gear Analysis Page</a>
       </div>
       <form className="flex flex-col gap-2 w-96" onSubmit={onFormSubmit}>
         <h2 className="text-xl font-bold">Class/Weapon</h2>
@@ -252,17 +254,17 @@ export default function Home() {
         <div>
           <label htmlFor="playstyle">Sort By: </label>
           <select id="sortby" name="sortby" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onSortByChange}>
-            <option value="dps">Base DPS</option>
+            <option value="baseDps">Base DPS</option>
             <option value="spell">Spell Damage</option>
             <option value="melee">Melee Damage</option>
-            <option value="poison">Poison</option>
+            {/* <option value="poison">Poison</option> */}
             <option value="mana">Mana Sustain</option>
             <option value="skillPoints">Skill Points</option>
             <option value="health">Health</option>
-            <option value="walkspeed">Walkspeed</option>
+            {/* <option value="walkspeed">Walkspeed</option> */}
             <option value="life">Life Sustain</option>
-            <option value="healing">Healing</option>
-            <option value="major">Major ID</option>
+            {/* <option value="healing">Healing</option>
+            <option value="major">Major ID</option> */}
           </select> 
         </div>
 
@@ -285,26 +287,23 @@ export default function Home() {
         <h2 className="text-xl font-bold">Results</h2>
         <div className="border border-slate-600 text-sm">
           <div className="m-2 flex">
-            <p className="w-64 font-bold">Name</p>
-            <p className="w-32 font-bold">Base DPS</p>
-            <p className="w-32 font-bold">Spell</p>
-            <p className="w-32 font-bold">Melee</p>
-            <p className="w-32 font-bold">Poison</p>
-            <p className="w-32 font-bold">Mana</p>
+            <p className="w-72 font-bold">Name</p>
+            <p className="w-48 font-bold">Base DPS</p>
+            <p className="w-48 font-bold">Spell</p>
+            <p className="w-48 font-bold">Melee</p>
+            <p className="w-48 font-bold">Mana</p>
             <p className="w-24 font-bold">SP</p>
-            <p className="w-32 font-bold">Health</p>
-            <p className="w-24 font-bold">WS</p>
-            <p className="w-32 font-bold">Life Sustain</p>
-            <p className="w-24 font-bold">Healing</p>
-            <p className="w-64 font-bold">Major ID</p>
+            <p className="w-48 font-bold">Health</p>
+            <p className="w-48 font-bold">Life Sustain</p>
+            <p className="w-48 font-bold">Other</p>
+            <p className="w-48 font-bold">Minor</p>
           </div>
           {
             indices ? indices.map((index) => {
               return <Weapon 
-                key={index[1].name}
+                key={index.general.name}
                 toggleBg={indices.indexOf(index) % 2 === 1}
-                baseDps={index[0]}
-                index={index[1]} />
+                index={index} />
             }) : <></>
           }
         </div>

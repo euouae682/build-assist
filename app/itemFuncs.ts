@@ -1,19 +1,19 @@
-import { POWDERS, ATK_MULTIPLIERS, SPELL_COSTS, Powder } from "./constants";
-import { Item, ItemList, Damage, IDs, Indices } from "./page";
+import { POWDERS, ATK_MULTIPLIERS, Powder } from "./constants";
+import { WynnItem, Damage, IDs, Indices } from "./itemTypes";
 
 // Get the base damages/base attack speed of a weapon
-const getDamages = (weapon: Item): Damage => {
+const getDamages = (weapon: WynnItem): Damage => {
     const base = weapon['base']
     if (base) {
         return {
             baseAtkMult: ATK_MULTIPLIERS[weapon["attackSpeed"]],
             damages: {
-                neutral: 'damage' in base && typeof base['damage'] !== "number" ? base['damage'] : {'min': 0, 'max': 0},
-                earth: 'earthDamage' in base && typeof base['earthDamage'] !== "number" ? base['earthDamage'] : {'min': 0, 'max': 0},
-                thunder: 'thunderDamage' in base && typeof base['thunderDamage'] !== "number" ? base['thunderDamage'] : {'min': 0, 'max': 0},
-                water: 'waterDamage' in base && typeof base['waterDamage'] !== "number" ? base['waterDamage'] : {'min': 0, 'max': 0},
-                fire: 'fireDamage' in base && typeof base['fireDamage'] !== "number" ? base['fireDamage'] : {'min': 0, 'max': 0},
-                air: 'airDamage' in base && typeof base['airDamage'] !== "number" ? base['airDamage'] : {'min': 0, 'max': 0}
+                neutral: 'baseDamage' in base && typeof base['baseDamage'] !== "number" ? base['baseDamage'] : {'min': 0, 'max': 0},
+                earth: 'baseEarthDamage' in base && typeof base['baseEarthDamage'] !== "number" ? base['baseEarthDamage'] : {'min': 0, 'max': 0},
+                thunder: 'baseThunderDamage' in base && typeof base['baseThunderDamage'] !== "number" ? base['baseThunderDamage'] : {'min': 0, 'max': 0},
+                water: 'baseWaterDamage' in base && typeof base['baseWaterDamage'] !== "number" ? base['baseWaterDamage'] : {'min': 0, 'max': 0},
+                fire: 'baseFireDamage' in base && typeof base['baseFireDamage'] !== "number" ? base['baseFireDamage'] : {'min': 0, 'max': 0},
+                air: 'baseAirDamage' in base && typeof base['baseAirDamage'] !== "number" ? base['baseAirDamage'] : {'min': 0, 'max': 0}
             }
         }
     }
@@ -115,8 +115,8 @@ const getIDMax = (ids: IDs, idName: string): number => {
 // Returns spell damage.
 // Specifically, returns the average damage of a theoretical spell with 100% neutral spell conversion.
 export const calcSpellDamage = (damage: Damage, ids: IDs) => {
-    const spellPct = getIDMax(ids, "damageBonus") / 100 + getIDMax(ids, "spellDamage") / 100;
-    const spellRaw = getIDMax(ids, "damageBonusRaw") + getIDMax(ids, "rawSpellDamage");
+    const spellPct = getIDMax(ids, "damage") / 100 + getIDMax(ids, "spellDamage") / 100;
+    const spellRaw = getIDMax(ids, "rawDamage") + getIDMax(ids, "rawSpellDamage");
 
     const nPct = getIDMax(ids, "neutralDamage") / 100 + getIDMax(ids, "neutralSpellDamage") / 100;
     const nRaw = getIDMax(ids, "rawNeutralDamage") + getIDMax(ids, "rawNeutralSpellDamage");
@@ -186,8 +186,8 @@ export const calcSpellDamage = (damage: Damage, ids: IDs) => {
 
 // Returns melee DPS.
 export const calcMeleeDamage = (damage: Damage, ids: IDs) => {
-    const meleePct = getIDMax(ids, "damageBonus") / 100 + getIDMax(ids, "mainAttackDamage") / 100;
-    const meleeRaw = getIDMax(ids, "damageBonusRaw") + getIDMax(ids, "rawMainAttackDamage");
+    const meleePct = getIDMax(ids, "damage") / 100 + getIDMax(ids, "mainAttackDamage") / 100;
+    const meleeRaw = getIDMax(ids, "rawDamage") + getIDMax(ids, "rawMainAttackDamage");
 
     const nPct = getIDMax(ids, "neutralDamage") / 100 + getIDMax(ids, "neutralMainAttackDamage") / 100;
     const nRaw = getIDMax(ids, "rawNeutralDamage") + getIDMax(ids, "rawNeutralMainAttackDamage");
@@ -332,103 +332,406 @@ const accumulateIDs = (weaponIDs: IDs, gearIDs: IDs): IDs => {
     return newIDs;
 }
 
-export const getSpellIndex = (damage: Damage, weaponIDs: IDs, accumulatedIDs: IDs): [number] => {
-    return [calcSpellDamage(damage, accumulatedIDs) - calcSpellDamage(damage, weaponIDs)];
+export const getSpellIndex = (damage: Damage, weaponIDs: IDs, accumulatedIDs: IDs): number => {
+    return calcSpellDamage(damage, accumulatedIDs) - calcSpellDamage(damage, weaponIDs);
 }
 
-export const getMeleeIndex = (damage: Damage, weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs): [number, string] => {
-    const extraTiers = getIDMax(gearIDs, "rawAttackSpeed");
-    let note = "";
-    if (extraTiers > 0) {
-        note = "ts";
-    }
-    else if (extraTiers < 0) {
-        note = "td";
-    }
-    return [calcMeleeDamage(damage, accumulatedIDs) - calcMeleeDamage(damage, weaponIDs), note];
+export const getMeleeIndex = (damage: Damage, weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs): number => {
+    return calcMeleeDamage(damage, accumulatedIDs) - calcMeleeDamage(damage, weaponIDs);
 }
 
-export const getPoisonIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs): [number, string] => {
-    const poisonID = getIDMax(gearIDs, "poison");
-    return [calcPoisonDamage(accumulatedIDs) - calcPoisonDamage(weaponIDs), poisonID < 0 ? "neg" : ""];
+export const getManaIndex = (weaponIDs: IDs, gearIDs: IDs,  accumulatedIDs: IDs, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number]): number => {
+    return calcManaSustain(accumulatedIDs, steals, cps, spellCycle, costs) - calcManaSustain(weaponIDs, steals, cps, spellCycle, costs);
 }
 
-export const getManaIndex = (weaponIDs: IDs, gearIDs: IDs,  accumulatedIDs: IDs, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number]): [number, string] => {
-    const [pct1, pct2, pct3, pct4] = [getIDMax(gearIDs, "1stSpellCost"), getIDMax(gearIDs, "2ndSpellCost"), getIDMax(gearIDs, "3rdSpellCost"), getIDMax(gearIDs, "4thSpellCost"),]
-    return [
-        calcManaSustain(accumulatedIDs, steals, cps, spellCycle, costs) - calcManaSustain(weaponIDs, steals, cps, spellCycle, costs), 
-        pct1 !== 0 || pct2 !== 0 || pct3 !== 0 || pct4 !== 0 ? "pct" : ""
-    ];
-}
-
-export const getSPIndex = (gearIDs: IDs, sp: [boolean, boolean, boolean, boolean, boolean]): [number, string] => {
+export const getSPIndex = (gearIDs: IDs, sp: [boolean, boolean, boolean, boolean, boolean]): number => {
     const str = sp[0] ? 0 : getIDMax(gearIDs, "rawStrength");
     const dex = sp[1] ? 0 : getIDMax(gearIDs, "rawDexterity");
     const int = sp[2] ? 0 : getIDMax(gearIDs, "rawIntelligence");
     const def = sp[3] ? 0 : getIDMax(gearIDs, "rawDefence");
     const agi = sp[4] ? 0 : getIDMax(gearIDs, "rawAgility");
-    const warning = (str < 0) || (dex < 0) || (int < 0) || (def < 0) || (agi < 0);
-    return [str + dex + int + def + agi, warning ? "neg" : ""];
+    return str + dex + int + def + agi;
 }
 
-export const getHealthIndex = (gear: Item, gearIDs: IDs): [number, string] => {
+export const getHealthIndex = (gear: WynnItem, gearIDs: IDs): number => {
     let baseHP = 0;
-    if (gear !== undefined && 'base' in gear) {
-        if (gear['base'] !== undefined && 'health' in gear['base']) {
-            baseHP = Number(gear['base']['health']);
-        }
+    if (gear["base"] && "health" in gear["base"] && typeof gear["base"]["health"] == "number") {
+        baseHP = gear["base"]["health"];
     }
     const extraHP = getIDMax(gearIDs, 'rawHealth');
-    return [baseHP + extraHP, extraHP !== 0 ? "rol" : ""];
+    return baseHP + extraHP;
 }
 
-export const getLifeIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs, steals: boolean): [number, string] => {
-    const hrID = getIDMax(gearIDs, "healthRegen");
-    return [calcLifeSustain(accumulatedIDs, steals) - calcLifeSustain(weaponIDs, steals), hrID !== 0 ? "pct" : ""]
+export const getLifeIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs, steals: boolean): number => {
+    return calcLifeSustain(accumulatedIDs, steals) - calcLifeSustain(weaponIDs, steals);
 }
 
-export const getWalkIndex = (gearIDs: IDs): [number] => {
-    return [getIDMax(gearIDs, "walkSpeed")];
-}
-
-export const getHealingIndex = (gearIDs: IDs): [number] => {
-    return [getIDMax(gearIDs, "healingEfficiency")];
-}
-
-export const getMajorID = (gear: Item): [string] => {
-    const major = gear['majorIds'];
-    if (major) {
-        return [major["name"]];
+export const getGeneralDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    if ("requirements" in gear) {
+        const requirements = gear['requirements'];
+        if ("strength" in requirements) {
+            details.push("Str Req: " + requirements['strength']);
+        }
+        if ("dexterity" in requirements) {
+            details.push("Dex Req: " + requirements['dexterity']);
+        }
+        if ("intelligence" in requirements) {
+            details.push("Int Req: " + requirements['intelligence']);
+        }
+        if ("defence" in requirements) {
+            details.push("Def Req: " + requirements['defence']);
+        }
+        if ("agility" in requirements) {
+            details.push("Agi Req: " + requirements['agility']);
+        }
+        if ("quest" in requirements) {
+            details.push("Quest: " + requirements['quest']);
+        }
     }
-    return [""]
+    if ("powderSlots" in gear) {
+        details.push("Slots: " + gear['powderSlots']);
+    }
+    if (gear['majorIds']) {
+        details.push("Major ID: " + Object.keys(gear['majorIds'])[0]);
+    }
+    return details;
 }
 
-export const getIndices = (weapon: Item, powdering: string, gearName: string, gear: Item, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
+export const getBaseDPSDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    if ('weaponType' in gear) {
+        details.push("Base Atk: " + gear["attackSpeed"]);
+    }
+    return details;
+}
+
+const getPhrase = (gearIDs: IDs, name: string, displayName: string, isDamage: boolean): string => {
+    let pctVal = 0;
+    let rawVal = 0;
+    if (name in gearIDs) {
+        pctVal = getIDMax(gearIDs, name);
+    }
+    if ("raw" + name.charAt(0).toUpperCase() + name.slice(1) in gearIDs) {
+        rawVal = getIDMax(gearIDs, "raw" + name.charAt(0).toUpperCase() + name.slice(1));
+    }
+    else if (name == "healthRegen" && name + "Raw" in gearIDs) {
+        rawVal = getIDMax(gearIDs, name + "Raw");
+    }
+
+    if (pctVal != 0 && rawVal != 0) {
+        return displayName + ": " + (isDamage ? pctVal + "%, " + rawVal : rawVal + ", " + pctVal + "%");
+    }
+    else if (pctVal != 0) {
+        return displayName + ": " + pctVal + "%";
+    }
+    else if (rawVal != 0) {
+        return displayName + ": " + rawVal;
+    }
+    return "";
+}
+
+export const getSpellDetails = (gear: WynnItem): string[] => {
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    let details = [
+        getPhrase(gearIDs, "damage", "Damage", true),
+        getPhrase(gearIDs, "spellDamage", "Spell", true),
+        getPhrase(gearIDs, "neutralDamage", "Neutral", true),
+        getPhrase(gearIDs, "neutralSpellDamage", "Neut. Spell", true),
+        getPhrase(gearIDs, "elementalDamage", "Elemental", true),
+        getPhrase(gearIDs, "elementalSpellDamage", "Elemt. Spell", true),
+        getPhrase(gearIDs, "earthDamage", "Earth", true),
+        getPhrase(gearIDs, "earthSpellDamage", "Earth Spell", true),
+        getPhrase(gearIDs, "thunderDamage", "Thunder", true),
+        getPhrase(gearIDs, "thunderSpellDamage", "Thunder Spell", true),
+        getPhrase(gearIDs, "waterDamage", "Water", true),
+        getPhrase(gearIDs, "waterSpellDamage", "Water Spell", true),
+        getPhrase(gearIDs, "fireDamage", "Fire", true),
+        getPhrase(gearIDs, "fireSpellDamage", "Fire Spell", true),
+        getPhrase(gearIDs, "airDamage", "Air", true),
+        getPhrase(gearIDs, "airSpellDamage", "Air Spell", true)
+    ]
+    details.filter((phrase) => phrase != "");
+    return details;
+}
+
+export const getMeleeDetails = (gear: WynnItem): string[] => {
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    let details = [
+        getPhrase(gearIDs, "damage", "Damage", true),
+        getPhrase(gearIDs, "mainAttackDamage", "Melee", true),
+        getPhrase(gearIDs, "neutralDamage", "Neutral", true),
+        getPhrase(gearIDs, "neutralMainAttackDamage", "Neut. Melee", true),
+        getPhrase(gearIDs, "elementalDamage", "Elemental", true),
+        getPhrase(gearIDs, "elementalMainAttackDamage", "Elemt. Melee", true),
+        getPhrase(gearIDs, "earthDamage", "Earth", true),
+        getPhrase(gearIDs, "earthMainAttackDamage", "Earth Melee", true),
+        getPhrase(gearIDs, "thunderDamage", "Thunder", true),
+        getPhrase(gearIDs, "thunderMainAttackDamage", "Thunder Melee", true),
+        getPhrase(gearIDs, "waterDamage", "Water", true),
+        getPhrase(gearIDs, "waterMainAttackDamage", "Water Melee", true),
+        getPhrase(gearIDs, "fireDamage", "Fire", true),
+        getPhrase(gearIDs, "fireMainAttackDamage", "Fire Melee", true),
+        getPhrase(gearIDs, "airDamage", "Air", true),
+        getPhrase(gearIDs, "airMainAttackDamage", "Air Melee", true)
+    ]
+    details.filter((phrase) => phrase != "");
+    if ("rawAttackSpeed" in gearIDs) {
+        details.push("Atk Speed: " + getIDMax(gearIDs, 'rawAttackSpeed'));
+    }
+    return details;
+}
+
+export const getManaDetails = (gear: WynnItem): string[] => {
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    let details = [
+        getPhrase(gearIDs, "1stSpellCost", "1st Cost", false),
+        getPhrase(gearIDs, "2ndSpellCost", "2nd Cost", false),
+        getPhrase(gearIDs, "3rdSpellCost", "3rd Cost", false),
+        getPhrase(gearIDs, "4thSpellCost", "4th Cost", false),
+    ]
+    details.filter((phrase) => phrase != "");
+    if ("manaRegen" in gearIDs) {
+        details.push("Mana Regen: " + getIDMax(gearIDs, 'manaRegen') + "/5s");
+    }
+    if ("manaSteal" in gearIDs) {
+        details.push("Mana Steal: " + getIDMax(gearIDs, 'manaSteal') + "/3s");
+    }
+    return details;
+}
+
+export const getSkillPointDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    if ("rawStrength" in gearIDs) {
+        details.push("Str: " + gearIDs['rawStrength']);
+    }
+    if ("rawDexterity" in gearIDs) {
+        details.push("Dex: " + gearIDs['rawDexterity']);
+    }
+    if ("rawIntelligence" in gearIDs) {
+        details.push("Int: " + gearIDs['rawIntelligence']);
+    }
+    if ("rawDefence" in gearIDs) {
+        details.push("Def: " + gearIDs['rawDefence']);
+    }
+    if ("rawAgility" in gearIDs) {
+        details.push("Agi: " + gearIDs['rawAgility']);
+    }
+    return details;
+}
+
+const getDefPhrase = (gear: WynnItem, gearIDs: IDs, name: string, displayName: string): string => {
+    let rawVal = 0;
+    let pctVal = 0;
+    const baseString = "base" + name.charAt(0).toUpperCase() + name.slice(1);
+    if ("base" in gear && gear["base"] && baseString in gear["base"] && typeof gear["base"][baseString] == "number") {
+        rawVal = gear["base"][baseString];
+    }
+    if (name in gearIDs) {
+        pctVal = getIDMax(gearIDs, name);
+    }
+
+    if (pctVal != 0 && rawVal != 0) {
+        return displayName + ": " + rawVal + ", " + pctVal + "%";
+    }
+    else if (pctVal != 0) {
+        return displayName + ": " + pctVal + "%";
+    }
+    else if (rawVal != 0) {
+        return displayName + ": " + rawVal;
+    }
+    return "";
+}
+
+export const getHealthDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    if (gear["base"] && "baseHealth" in gear["base"] && typeof gear["base"]["baseHealth"] == "number") {
+        details.push("Base HP: " + gear["base"]["baseHealth"]);
+    }
+    if ("rawHealth" in gearIDs) {
+        details.push("Bonus HP: " + getIDMax(gearIDs, 'rawHealth'));
+    }
+    const defenses = [
+        getDefPhrase(gear, gearIDs, "earthDefence", "Earth Def"),
+        getDefPhrase(gear, gearIDs, "thunderDefence", "Thunder Def"),
+        getDefPhrase(gear, gearIDs, "waterDefence", "Water Def"),
+        getDefPhrase(gear, gearIDs, "fireDefence", "Fire Def"),
+        getDefPhrase(gear, gearIDs, "airDefence", "Air Def")
+    ]
+    defenses.map((phrase) => {
+        if (phrase != "") {
+            details.push(phrase);
+        }
+    })
+    if ("elementalDefence" in gearIDs) {
+        details.push("Elemt. Def: " + getIDMax(gearIDs, 'elementalDefence') + "%");
+    }
+    return details;
+}
+
+export const getLifeDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    const hpr = getPhrase(gearIDs, "healthRegen", "HP Regen", false);
+    if (hpr != "") {
+        details.push(hpr);
+    }
+    if ("lifeSteal" in gearIDs) {
+        details.push("Life Steal: " + getIDMax(gearIDs, 'lifeSteal') + "/3s");
+    }
+    return details;
+}
+
+export const getOtherDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    if ("poison" in gearIDs) {
+        details.push("Poison: " + getIDMax(gearIDs, 'poison') + "/3s");
+    }
+    if ("walkSpeed" in gearIDs) {
+        details.push("Walkspeed: " + getIDMax(gearIDs, 'walkSpeed') + "%");
+    }
+    if ("jumpHeight" in gearIDs) {
+        details.push("Jump Height: " + getIDMax(gearIDs, 'jumpHeight'));
+    }
+    if ("healingEfficiency" in gearIDs) {
+        details.push("Healing: " + getIDMax(gearIDs, 'healingEfficiency') + "%");
+    }
+    if ("knockback" in gearIDs) {
+        details.push("Knockback: " + getIDMax(gearIDs, 'knockback') + "%");
+    }
+    if ("slowEnemy" in gearIDs) {
+        details.push("Slow: " + getIDMax(gearIDs, 'slowEnemy') + "%");
+    }
+    if ("weakenEnemy" in gearIDs) {
+        details.push("Weaken: " + getIDMax(gearIDs, 'weakenEnemy') + "%");
+    }
+    if ("xpBonus" in gearIDs) {
+        details.push("XP Bonus: " + getIDMax(gearIDs, 'xpBonus') + "%");
+    }
+    if ("lootBonus" in gearIDs) {
+        details.push("Loot Bonus: " + getIDMax(gearIDs, 'lootBonus') + "%");
+    }
+    return details;
+}
+
+export const getMinorDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    if ("thorns" in gearIDs) {
+        details.push("Thorns: " + getIDMax(gearIDs, 'thorns') + "%");
+    }
+    if ("reflection" in gearIDs) {
+        details.push("Reflection: " + getIDMax(gearIDs, 'reflection') + "%");
+    }
+    if ("exploding" in gearIDs) {
+        details.push("Exploding: " + getIDMax(gearIDs, 'exploding') + "%");
+    }
+    if ("stealing" in gearIDs) {
+        details.push("Stealing: " + getIDMax(gearIDs, 'stealing') + "%");
+    }
+    if ("sprint" in gearIDs) {
+        details.push("Sprint: " + getIDMax(gearIDs, 'sprint') + "%");
+    }
+    if ("sprintRegen" in gearIDs) {
+        details.push("Sprint Regen: " + getIDMax(gearIDs, 'sprintRegen') + "%");
+    }
+    return details;
+}
+
+export const getItemDetails = (gear: WynnItem): string[][] => {
+    return [
+        getGeneralDetails(gear), 
+        getBaseDPSDetails(gear),
+        getSpellDetails(gear), 
+        getMeleeDetails(gear), 
+        getManaDetails(gear), 
+        getSkillPointDetails(gear), 
+        getHealthDetails(gear), 
+        getLifeDetails(gear), 
+        getOtherDetails(gear), 
+        getMinorDetails(gear)
+    ];
+}
+
+export const getIndices = (weapon: WynnItem, powdering: string, gearName: string, gear: WynnItem, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
     const powdersToApply: Powder[] = compressPowders(powdering);
     const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
     const weaponIDs: IDs = weapon['identifications'] ? weapon['identifications'] : {};
     const gearIDs: IDs = gear['identifications'] ? gear['identifications'] : {};
     const accumulatedIDs: IDs = accumulateIDs(weaponIDs, gearIDs ? gearIDs : {});
+    const gearDetails: string[][] = getItemDetails(gear);
 
     return {
-        level: gear['requirements']['level'],
-        name: gearName,
-        rarity: gear['tier'],
-        spell: getSpellIndex(powderedDamage, weaponIDs, accumulatedIDs),
-        melee: getMeleeIndex(powderedDamage, weaponIDs, gearIDs, accumulatedIDs),
-        poison: getPoisonIndex(weaponIDs, gearIDs, accumulatedIDs),
-        mana: getManaIndex(weaponIDs, gearIDs, accumulatedIDs, steals, cps, spellCycle, costs),
-        skillPoints: getSPIndex(gearIDs, sp),
-        health: getHealthIndex(gear, gearIDs),
-        life: getLifeIndex(weaponIDs, gearIDs, accumulatedIDs, steals),
-        walkspeed: getWalkIndex(gearIDs),
-        healing: getHealingIndex(gearIDs),
-        major: getMajorID(gear),
+        general: {
+            name: gearName,
+            level: gear['requirements']['level'],
+            rarity: gear['rarity'],
+            details: gearDetails[0]
+        },
+        spell: {
+            value: getSpellIndex(powderedDamage, weaponIDs, accumulatedIDs),
+            details: gearDetails[2]
+        },
+        melee: {
+            value: getMeleeIndex(powderedDamage, weaponIDs, gearIDs, accumulatedIDs),
+            details: gearDetails[3]
+        },
+        mana: {
+            value: getManaIndex(weaponIDs, gearIDs, accumulatedIDs, steals, cps, spellCycle, costs),
+            details: gearDetails[4]
+        },
+        skillPoints: {
+            value: getSPIndex(gearIDs, sp),
+            details: gearDetails[5]
+        },
+        health: {
+            value: getHealthIndex(gear, gearIDs),
+            details: gearDetails[6]
+        },
+        life: {
+            value: getLifeIndex(weaponIDs, gearIDs, accumulatedIDs, steals),
+            details: gearDetails[7]
+        },
+        other: {
+            value: gearDetails[8].length,
+            details: gearDetails[8]
+        },
+        minor: {
+            value: gearDetails[9].length,
+            details: gearDetails[9]
+        }
     };
 }
 
-export const getWeaponIndices = (weaponName: string, weapon: Item, powderTier: number, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): [number, Indices] => {
+export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTier: number, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
 
     const powderSlots = 'powderSlots' in weapon ? weapon['powderSlots'] : 0;
@@ -437,42 +740,72 @@ export const getWeaponIndices = (weaponName: string, weapon: Item, powderTier: n
         powdering = "";
     }
     else if (baseDamage['damages']['thunder']['max'] > 0) {
-        powdering = `t${powderTier}`.repeat(powderSlots);
+        powdering = `t${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
     else if (baseDamage['damages']['earth']['max'] > 0) {
-        powdering = `e${powderTier}`.repeat(powderSlots);
+        powdering = `e${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
     else if (baseDamage['damages']['air']['max'] > 0) {
-        powdering = `a${powderTier}`.repeat(powderSlots);
+        powdering = `a${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
     else if (baseDamage['damages']['fire']['max'] > 0) {
-        powdering = `f${powderTier}`.repeat(powderSlots);
+        powdering = `f${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
     else if (baseDamage['damages']['water']['max'] > 0) {
-        powdering = `w${powderTier}`.repeat(powderSlots);
+        powdering = `w${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
     else {
-        powdering = `t${powderTier}`.repeat(powderSlots);
+        powdering = `t${powderTier}`.repeat(powderSlots ? powderSlots : 0);
     }
 
     const powdersToApply: Powder[] = compressPowders(powdering);
     const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
     const weaponIDs: IDs = weapon['identifications'] ? weapon['identifications'] : {};
     const powderStr: string = powdering === "" ? "" : `[${powdering}]`
-    
-    return [getBaseDPS(powderedDamage), {
-        level: weapon['requirements']['level'],
-        name: weaponName + " " + powderStr,
-        rarity: weapon['tier'],
-        spell: [calcSpellDamage(powderedDamage, weaponIDs)],
-        melee: [calcMeleeDamage(powderedDamage, weaponIDs), ""],
-        poison: [calcPoisonDamage(weaponIDs), ""],
-        mana: [calcManaSustain(weaponIDs, steals, cps, spellCycle, costs), ""],
-        skillPoints: getSPIndex(weaponIDs, sp),
-        health: [getIDMax(weaponIDs, 'rawHealth'), ""],
-        life: [calcLifeSustain(weaponIDs, steals), ""],
-        walkspeed: getWalkIndex(weaponIDs),
-        healing: getHealingIndex(weaponIDs),
-        major: getMajorID(weapon)
-    }]
+    const weaponDetails: string[][] = getItemDetails(weapon);
+
+    return {
+        general: {
+            name: weaponName + " " + powderStr,
+            level: weapon['requirements']['level'],
+            rarity: weapon['rarity'],
+            details: weaponDetails[0]
+        },
+        baseDps: {
+            value: getBaseDPS(powderedDamage),
+            details: weaponDetails[1]
+        },
+        spell: {
+            value: calcSpellDamage(powderedDamage, weaponIDs),
+            details: weaponDetails[2]
+        },
+        melee: {
+            value: calcMeleeDamage(powderedDamage, weaponIDs),
+            details: weaponDetails[3]
+        },
+        mana: {
+            value: calcManaSustain(weaponIDs, steals, cps, spellCycle, costs),
+            details: weaponDetails[4]
+        },
+        skillPoints: {
+            value: getSPIndex(weaponIDs, sp),
+            details: weaponDetails[5]
+        },
+        health: {
+            value: getIDMax(weaponIDs, 'rawHealth'),
+            details: weaponDetails[6]
+        },
+        life: {
+            value: calcLifeSustain(weaponIDs, steals),
+            details: weaponDetails[7]
+        },
+        other: {
+            value: weaponDetails[8].length,
+            details: weaponDetails[8]
+        },
+        minor: {
+            value: weaponDetails[9].length,
+            details: weaponDetails[9]
+        }
+    };
 }

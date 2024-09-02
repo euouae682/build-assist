@@ -4,69 +4,7 @@ import React, { useState, useEffect } from "react";
 import Item from "./Item";
 import { getIndices } from "./itemFuncs";
 import { SPELL_COSTS } from "./constants";
-
-export type IDs = {
-  [key: string]: number | {
-    min: number,
-    max: number,
-    raw: number
-  }
-}
-
-export type Item = {
-  tier: string,
-  powderSlots: number,
-  type: string,
-  attackSpeed: string,
-  majorIds?: {
-    name: string,
-    description: string
-  },
-  base?: {
-    [key: string]: {
-      min: number,
-      max: number
-    } | number,
-  },
-  requirements: {
-    level: number
-    [key: string]: number
-  }
-  identifications: IDs,
-  [key: string]: unknown
-};
-
-export type ItemList = {
-  [key: string]: Item
-}
-
-export type Damage = {
-  baseAtkMult: number,
-  damages: {
-    neutral: {min: number, max: number},
-    earth: {min: number, max: number},
-    thunder: {min: number, max: number},
-    water: {min: number, max: number},
-    fire: {min: number, max: number},
-    air: {min: number, max: number}
-  }
-}
-
-export type Indices = {
-  level: number,
-  name: string,
-  rarity: string,
-  spell: [number],
-  melee: [number, string],
-  poison: [number, string],
-  mana: [number, string],
-  skillPoints: [number, string]
-  health: [number, string],
-  life: [number, string],
-  walkspeed: [number],
-  healing: [number],
-  major: [string]
-}
+import { ItemList, Indices } from "./itemTypes"
 
 export default function Home() {
   // Form state variables - general
@@ -108,21 +46,18 @@ export default function Home() {
       setGearList(Object.entries(itemsList)
         .filter((item) => {
           if (gearType === 'all') {
-            return ('type' in item[1] && (item[1]['type'] === 'helmet' 
-              || item[1]['type'] === 'chestplate' 
-              || item[1]['type'] === 'leggings' 
-              || item[1]['type'] === 'boots')) || ('accessoryType' in item[1]);
+            return ('type' in item[1] && (item[1]['type'] === 'armour' 
+              || item[1]['type'] === 'accessory'));
           }
           else if (gearType === 'armor') {
-            return 'type' in item[1] && (item[1]['type'] === 'helmet' 
-              || item[1]['type'] === 'chestplate' 
-              || item[1]['type'] === 'leggings' 
-              || item[1]['type'] === 'boots');
+            return 'type' in item[1] && (item[1]['type'] === 'armour');
           }
           else if (gearType === 'accessories') {
             return 'accessoryType' in item[1];
           }
-          return ('type' in item[1] && item[1]['type'] === gearType) || ('accessoryType' in item[1] && item[1]['accessoryType'] === gearType);
+          return (('weaponType' in item[1] && item[1]['weaponType'] === gearType) || 
+          ('armourType' in item[1] && item[1]['armourType'] === gearType) ||
+          ('accessoryType' in item[1] && item[1]['accessoryType'] === gearType));
         })
         .filter((item) => {
           if (item[1]['requirements']['level'] > levelReq) {
@@ -158,7 +93,7 @@ export default function Home() {
   const filterWeapons = (type: string): void => {
     if (itemsList !== null) {
       setWeaponsList(Object.entries(itemsList)
-        .filter((item) => 'type' in item[1] && item[1]['type'] === type)
+        .filter((item) => 'weaponType' in item[1] && item[1]['weaponType'] === type)
         .map((item) => item[0])
         .sort()
       );
@@ -167,7 +102,7 @@ export default function Home() {
 
   const getPowderSlots = (weapon: string): void => {
     if (itemsList !== null) {
-      if ('powderSlots' in itemsList[weapon]) {
+      if ('powderSlots' in itemsList[weapon] && itemsList[weapon]['powderSlots'] != undefined) {
         setPowderSlots(itemsList[weapon]['powderSlots'])
       }
       else {
@@ -187,21 +122,20 @@ export default function Home() {
       })
     }
 
-    if (sortBy === "spell" || sortBy === "melee" || sortBy === "poison" 
+    if (sortBy === "spell" || sortBy === "melee"  
       || sortBy === "mana" || sortBy === "skillPoints" || sortBy === "health"
-      || sortBy === "life" || sortBy === "walkspeed" || sortBy === "healing"
-      || sortBy === "major") {
+      || sortBy === "life") {
       sortList(indicesList, sortBy);
     }
     setIndices(indicesList.slice(0, showAmt));
   }
 
-  const sortList = (list: Indices[], key: "spell" | "melee" | "poison" | "mana" | "skillPoints" | "health" | "life" | "walkspeed" | "healing" | "major"): Indices[] => {
+  const sortList = (list: Indices[], key: "spell" | "melee" | "mana" | "skillPoints" | "health" | "life"): Indices[] => {
     if (list !== null) {
-      if (key === "major") {
-        return list.sort((index1, index2) => index2["major"][0].localeCompare(index1["major"][0]))
-      }
-      return list.sort((index1, index2) => index2[key][0] - index1[key][0]);
+      // if (key === "major") {
+      //   return list.sort((index1, index2) => index2["major"][0].localeCompare(index1["major"][0]))
+      // }
+      return list.sort((index1, index2) => index2[key].value - index1[key].value);
     }
     return [];
   }
@@ -330,6 +264,7 @@ export default function Home() {
             </ul>
           </p> : <></>
         }
+        <a className="text-slate-400 hover:text-slate-600 cursor-pointer transition w-56" href="/weapons">To Weapon Analysis Page</a>
       </div>
       <form className="flex flex-col gap-2 w-96" onSubmit={onFormSubmit}>
         <h2 className="text-xl font-bold">Class/Weapon</h2>
@@ -432,14 +367,14 @@ export default function Home() {
           <select id="sortby" name="sortby" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onSortByChange}>
             <option value="spell">Spell Damage</option>
             <option value="melee">Melee Damage</option>
-            <option value="poison">Poison</option>
+            {/* <option value="poison">Poison</option> */}
             <option value="mana">Mana Sustain</option>
             <option value="skillPoints">Skill Points</option>
             <option value="health">Health</option>
-            <option value="walkspeed">Walkspeed</option>
+            {/* <option value="walkspeed">Walkspeed</option> */}
             <option value="life">Life Sustain</option>
-            <option value="healing">Healing</option>
-            <option value="major">Major ID</option>
+            {/* <option value="healing">Healing</option>
+            <option value="major">Major ID</option> */}
           </select> 
         </div>
 
@@ -463,21 +398,19 @@ export default function Home() {
         <div className="border border-slate-600">
           <div className="m-2 flex text-sm">
             <p className="w-64 font-bold">Name</p>
-            <p className="w-32 font-bold">Spell</p>
-            <p className="w-32 font-bold">Melee</p>
-            <p className="w-32 font-bold">Poison</p>
-            <p className="w-32 font-bold">Mana</p>
+            <p className="w-48 font-bold">Spell</p>
+            <p className="w-48 font-bold">Melee</p>
+            <p className="w-48 font-bold">Mana</p>
             <p className="w-24 font-bold">SP</p>
-            <p className="w-32 font-bold">Health</p>
-            <p className="w-24 font-bold">WS</p>
-            <p className="w-32 font-bold">Life Sustain</p>
-            <p className="w-24 font-bold">Healing</p>
-            <p className="w-64 font-bold">Major ID</p>
+            <p className="w-48 font-bold">Health</p>
+            <p className="w-48 font-bold">Life Sustain</p>
+            <p className="w-48 font-bold">Other</p>
+            <p className="w-48 font-bold">Minor</p>
           </div>
           {
             indices ? indices.map((index) => {
               return <Item 
-                key={index.name}
+                key={index.general.name}
                 toggleBg={indices.indexOf(index) % 2 === 1}
                 index={index} />
             }) : <></>
