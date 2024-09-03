@@ -398,10 +398,11 @@ export const getGeneralDetails = (gear: WynnItem): string[] => {
     return details;
 }
 
-export const getBaseDPSDetails = (gear: WynnItem): string[] => {
+export const getBaseDPSDetails = (baseDps: number, gear: WynnItem): string[] => {
     let details: string[] = [];
     if ('weaponType' in gear) {
         details.push("Base Atk: " + gear["attackSpeed"]);
+        details.push("Per Hit: " + (baseDps / ATK_MULTIPLIERS[gear["attackSpeed"]]).toFixed(2));
     }
     return details;
 }
@@ -665,10 +666,10 @@ export const getMinorDetails = (gear: WynnItem): string[] => {
     return details;
 }
 
-export const getItemDetails = (gear: WynnItem): string[][] => {
+export const getItemDetails = (baseDps: number, gear: WynnItem): string[][] => {
     return [
         getGeneralDetails(gear), 
-        getBaseDPSDetails(gear),
+        getBaseDPSDetails(baseDps, gear),
         getSpellDetails(gear), 
         getMeleeDetails(gear), 
         getManaDetails(gear), 
@@ -687,7 +688,7 @@ export const getIndices = (weapon: WynnItem, powdering: string, gearName: string
     const weaponIDs: IDs = weapon['identifications'] ? weapon['identifications'] : {};
     const gearIDs: IDs = gear['identifications'] ? gear['identifications'] : {};
     const accumulatedIDs: IDs = accumulateIDs(weaponIDs, gearIDs ? gearIDs : {});
-    const gearDetails: string[][] = getItemDetails(gear);
+    const gearDetails: string[][] = getItemDetails(getBaseDPS(powderedDamage), gear);
 
     return {
         general: {
@@ -762,7 +763,7 @@ export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTie
     const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
     const weaponIDs: IDs = weapon['identifications'] ? weapon['identifications'] : {};
     const powderStr: string = powdering === "" ? "" : `[${powdering}]`
-    const weaponDetails: string[][] = getItemDetails(weapon);
+    const weaponDetails: string[][] = getItemDetails(getBaseDPS(powderedDamage), weapon);
 
     return {
         general: {
