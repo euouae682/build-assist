@@ -355,8 +355,8 @@ export const getSPIndex = (gearIDs: IDs, sp: [boolean, boolean, boolean, boolean
 
 export const getHealthIndex = (gear: WynnItem, gearIDs: IDs): number => {
     let baseHP = 0;
-    if (gear["base"] && "health" in gear["base"] && typeof gear["base"]["health"] == "number") {
-        baseHP = gear["base"]["health"];
+    if (gear["base"] && "baseHealth" in gear["base"] && typeof gear["base"]["baseHealth"] == "number") {
+        baseHP = gear["base"]["baseHealth"];
     }
     const extraHP = getIDMax(gearIDs, 'rawHealth');
     return baseHP + extraHP;
