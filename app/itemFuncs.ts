@@ -305,11 +305,8 @@ export const calcLifeSustain = (ids: IDs, steals: boolean): number => {
     const pctRegen = getIDMax(ids, "healthRegen") / 100;
     const totalRegen = rawRegen >= 0 ? rawRegen * (1 + pctRegen) : rawRegen * (Math.max(1 - pctRegen, 0));
     const steal = steals ? getIDMax(ids, "lifeSteal") / 3 : 0
-    if (steal == 0 && rawRegen == 0 && pctRegen > 0) {
-        return 0.001;
-    }
-    else if (steal == 0 && rawRegen == 0 && pctRegen < 0) {
-        return -0.001;
+    if (steal == 0 && rawRegen == 0 && pctRegen != 0) {
+        return pctRegen / 100;
     }
     return totalRegen + steal;
 }
