@@ -624,6 +624,9 @@ export const getOtherDetails = (gear: WynnItem): string[] => {
     if ("healingEfficiency" in gearIDs) {
         details.push("Healing: " + getIDMax(gearIDs, 'healingEfficiency') + "%");
     }
+    if ("maxMana" in gearIDs) {
+        details.push("Max Mana: " + getIDMax(gearIDs, 'maxMana'));
+    }
     if ("knockback" in gearIDs) {
         details.push("Knockback: " + getIDMax(gearIDs, 'knockback') + "%");
     }
