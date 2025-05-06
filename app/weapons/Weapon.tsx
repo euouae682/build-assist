@@ -29,7 +29,7 @@ export default function Item({ toggleBg, index }: ItemProps) {
             return '#bb0fff';
         }
         else {
-            return 'black';
+            return 'inherit';
         }
     }
 
@@ -40,7 +40,7 @@ export default function Item({ toggleBg, index }: ItemProps) {
         else if (index < -0.001) {
             return '#ff0f0f';
         }
-        return 'black';
+        return 'inherit';
     }
 
     const getDetailWidth = (index: string): string => {
