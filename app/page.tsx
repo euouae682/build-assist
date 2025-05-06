@@ -400,8 +400,8 @@ export default function Home() {
             <p className="w-64 font-bold">Name</p>
             <p className="w-48 font-bold">Spell</p>
             <p className="w-48 font-bold">Melee</p>
-            <p className="w-48 font-bold">Mana</p>
             <p className="w-24 font-bold">SP</p>
+            <p className="w-48 font-bold">Mana</p>
             <p className="w-48 font-bold">Health</p>
             <p className="w-48 font-bold">Life Sustain</p>
             <p className="w-48 font-bold">Other</p>
