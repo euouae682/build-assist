@@ -29,7 +29,7 @@ export default function Item({ toggleBg, index }: ItemProps) {
             return '#bb0fff';
         }
         else {
-            return 'black';
+            return 'inherit';
         }
     }
 
@@ -40,7 +40,7 @@ export default function Item({ toggleBg, index }: ItemProps) {
         else if (index < -0.001) {
             return '#ff0f0f';
         }
-        return 'black';
+        return 'inherit';
     }
 
     const getMeleeType = (type: string): string => {
@@ -58,7 +58,7 @@ export default function Item({ toggleBg, index }: ItemProps) {
     }
 
     return (
-        <section style={{backgroundColor: toggleBg ? '#f0f0f0' : '#ffffff'}} className="p-2 text-sm">
+        <section style={{backgroundColor: toggleBg ? 'var(--dark-cell)' : 'var(--light-cell)'}} className="p-2 text-sm">
             <div className="flex">
                 <p style={{color: getRarityColor(index.general.rarity)}} className="w-64 cursor-pointer hover:opacity-40 transition-all" onClick={onNameClick} >Lv. {index.general.level} { index.general.name }</p>
                 <p style={{color: getSignColor(index.spell.value)}} className="w-48">{ index.spell.value.toFixed(2) }</p>

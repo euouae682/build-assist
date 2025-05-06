@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --light-cell: #f0f0f0;
+    --dark-cell: #ffffff;
+}
+
+input, select {
+    background: #c4c4c4
+}
+
+input:hover, select:hover {
+    background: #aeaeae
+}
+
+@media (prefers-color-scheme: dark) {
+    :root { --light-cell: #393939; --dark-cell: #292929; }
+    body { background: #333; color: white; } 
+    input, select { background: #5d5d5d; }
+    input:hover, select:hover { background: #838383; }
+}
