@@ -68,7 +68,7 @@ export default function Item({ toggleBg, index }: ItemProps) {
     }
 
     return (
-        <section style={{backgroundColor: toggleBg ? '#f0f0f0' : '#ffffff'}} className="p-2 text-[12px]">
+        <section style={{backgroundColor: toggleBg ? 'var(--dark-cell)' : 'var(--light-cell)'}} className="p-2 text-[12px]">
             <div className="flex">
                 <p style={{color: getRarityColor(index.general.rarity)}} className="w-72 cursor-pointer hover:opacity-40 transition-all" onClick={onNameClick}>Lv. {index.general.level} { index.general.name }</p>
                 <p style={{color: getSignColor(index.baseDps != undefined ? index.baseDps.value : -1)}} className="w-48">{ index.baseDps != undefined ? index.baseDps.value.toFixed(2) : -1 }</p>

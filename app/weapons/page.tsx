@@ -179,7 +179,7 @@ export default function Home() {
         <h2 className="text-xl font-bold">Class/Weapon</h2>
         <div>
           <label htmlFor="cla">Class: </label>
-          <select id="cla" name="cla" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" defaultValue="default" onChange={onClassChange}>
+          <select id="cla" name="cla" className="rounded-md p-1 transition cursor-pointer" defaultValue="default" onChange={onClassChange}>
             <option disabled value="default"> -- select an option -- </option>
             <option value="bow">Archer/Hunter</option>
             <option value="spear">Warrior/Knight</option>
@@ -191,7 +191,7 @@ export default function Home() {
 
         <div className="transition-all">
           <label htmlFor="ptier">Powder Tier: </label>
-          <select id="ptier" name="ptier" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" defaultValue="6" onChange={onPowderChange}>
+          <select id="ptier" name="ptier" className="rounded-md p-1 transition cursor-pointer" defaultValue="6" onChange={onPowderChange}>
             <option value="6">VI</option>
             <option value="5">V</option>
             <option value="4">IV</option>
@@ -205,7 +205,7 @@ export default function Home() {
         <h2 className="text-xl font-bold">Playstyle</h2>
         <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="playstyle">Playstyle: </label>
-          <select id="playstyle" name="playstyle" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" value={useSteals ? "steals" : "regen"} onChange={onPlaystyleChange}>
+          <select id="playstyle" name="playstyle" className="rounded-md p-1 hotransition cursor-pointer" value={useSteals ? "steals" : "regen"} onChange={onPlaystyleChange}>
             <option value="steals">Hybrid or Melee (MR/MS)</option>
             <option value="regen">Spellspam (Only MR)</option>
           </select>
@@ -213,17 +213,17 @@ export default function Home() {
 
         <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="cps">CPS: </label>
-          <input type="number" id="cps" name="cps" className="bg-slate-200 rounded-md p-1 transition w-16" value={cps} onChange={onCPSChange} />
+          <input type="number" id="cps" name="cps" className="rounded-md p-1 transition w-16" value={cps} onChange={onCPSChange} />
         </div>
 
         <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="cps">Spell Cycle (i.e. 1334): </label>
-          <input type="text" id="cps" name="cps" className="bg-slate-200 rounded-md p-1 transition w-32" value={spellCycle} onChange={onSpellCycleChange} pattern={"[1-4]+"} />
+          <input type="text" id="cps" name="cps" className="rounded-md p-1 transition w-32" value={spellCycle} onChange={onSpellCycleChange} pattern={"[1-4]+"} />
         </div>
 
         <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="int">Estimated Int: </label>
-          <select id="int" name="int" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" value={int} onChange={onIntChange}>
+          <select id="int" name="int" className="rounded-md p-1 hotransition cursor-pointer" value={int} onChange={onIntChange}>
             <option value="0">0 int</option>
             <option value="30">30 int</option>
             <option value="60">60 int</option>
@@ -248,12 +248,12 @@ export default function Home() {
 
         <div>
           <label htmlFor="level">Max Level: </label>
-          <input type="number" id="level" name="level" className="bg-slate-200 rounded-md p-1 transition w-16" value={levelReq} onChange={onLevelChange} />
+          <input type="number" id="level" name="level" className="rounded-md p-1 transition w-16" value={levelReq} onChange={onLevelChange} />
         </div>
 
         <div>
           <label htmlFor="playstyle">Sort By: </label>
-          <select id="sortby" name="sortby" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" onChange={onSortByChange}>
+          <select id="sortby" name="sortby" className="rounded-md p-1 transition cursor-pointer" onChange={onSortByChange}>
             <option value="baseDps">Base DPS</option>
             <option value="spell">Spell Damage</option>
             <option value="melee">Melee Damage</option>
@@ -270,7 +270,7 @@ export default function Home() {
 
         <div>
           <label htmlFor="showamt">Number of Results: </label>
-          <select id="showamt" name="showamt" className="bg-slate-200 rounded-md p-1 hover:bg-slate-300 transition cursor-pointer" value={showAmt} onChange={onShowAmtChange}>
+          <select id="showamt" name="showamt" className="rounded-md p-1 transition cursor-pointer" value={showAmt} onChange={onShowAmtChange}>
             <option value="10">10</option>
             <option value="25">25</option>
             <option value="50">50</option>
