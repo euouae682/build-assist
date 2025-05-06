@@ -87,13 +87,13 @@ export default function Item({ toggleBg, index }: ItemProps) {
                         return <p key={phrase}>{ phrase }</p>
                     }) }
                 </div>
-                <div className="flex flex-col w-48">
-                    { index.mana.details.map((phrase) => {
+                <div className="flex flex-col w-24">
+                    { index.skillPoints.details.map((phrase) => {
                         return <p key={phrase}>{ phrase }</p>
                     }) }
                 </div>
-                <div className="flex flex-col w-24">
-                    { index.skillPoints.details.map((phrase) => {
+                <div className="flex flex-col w-48">
+                    { index.mana.details.map((phrase) => {
                         return <p key={phrase}>{ phrase }</p>
                     }) }
                 </div>
