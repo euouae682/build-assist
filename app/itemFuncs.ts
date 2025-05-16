@@ -303,7 +303,7 @@ export const calcManaSustain = (ids: IDs, steals: boolean, cps: number, spellCyc
 export const calcLifeSustain = (ids: IDs, steals: boolean): number => {
     const rawRegen = getIDMax(ids, "healthRegenRaw");
     const pctRegen = getIDMax(ids, "healthRegen") / 100;
-    const totalRegen = rawRegen >= 0 ? rawRegen * (1 + pctRegen) : rawRegen * (Math.max(1 - pctRegen, 0));
+    const totalRegen = rawRegen >= 0 ? (rawRegen * (1 + pctRegen)) / 4 : (rawRegen * (Math.max(1 - pctRegen, 0))) / 4;
     const steal = steals ? getIDMax(ids, "lifeSteal") / 3 : 0
     if (steal == 0 && rawRegen == 0 && pctRegen != 0) {
         return pctRegen / 100;
