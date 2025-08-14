@@ -627,8 +627,8 @@ export const getOtherDetails = (gear: WynnItem): string[] => {
     if ("maxMana" in gearIDs) {
         details.push("Max Mana: " + getIDMax(gearIDs, 'maxMana'));
     }
-    if ("knockback" in gearIDs) {
-        details.push("Knockback: " + getIDMax(gearIDs, 'knockback') + "%");
+    if ("mainAttackRange" in gearIDs) {
+        details.push("Melee Range: " + getIDMax(gearIDs, 'mainAttackRange'));
     }
     if ("slowEnemy" in gearIDs) {
         details.push("Slow: " + getIDMax(gearIDs, 'slowEnemy') + "%");
@@ -668,6 +668,9 @@ export const getMinorDetails = (gear: WynnItem): string[] => {
     }
     if ("sprintRegen" in gearIDs) {
         details.push("Sprint Regen: " + getIDMax(gearIDs, 'sprintRegen') + "%");
+    }
+    if ("knockback" in gearIDs) {
+        details.push("Knockback: " + getIDMax(gearIDs, 'knockback') + "%");
     }
     return details;
 }

@@ -47,13 +47,13 @@ type Elemental = 'earth' | 'thunder' | 'water' | 'fire' | 'air'
 export const ATK_MULTIPLIERS: {
     [key: string]: number
 } = {
-    "super_slow": 0.51,
-    "very_slow": 0.83,
+    "superSlow": 0.51,
+    "verySlow": 0.83,
     "slow": 1.5,
     "normal": 2.05,
     "fast": 2.5,
-    "very_fast": 3.1,
-    "super_fast": 4.3
+    "veryFast": 3.1,
+    "superFast": 4.3
 }
 
 export const SPELL_COSTS: {
