@@ -624,11 +624,11 @@ export const getOtherDetails = (gear: WynnItem): string[] => {
     if ("healingEfficiency" in gearIDs) {
         details.push("Healing: " + getIDMax(gearIDs, 'healingEfficiency') + "%");
     }
-    if ("maxMana" in gearIDs) {
-        details.push("Max Mana: " + getIDMax(gearIDs, 'maxMana'));
+    if ("rawMaxMana" in gearIDs) {
+        details.push("Max Mana: " + getIDMax(gearIDs, 'rawMaxMana'));
     }
     if ("mainAttackRange" in gearIDs) {
-        details.push("Melee Range: " + getIDMax(gearIDs, 'mainAttackRange'));
+        details.push("Melee Range: " + getIDMax(gearIDs, 'mainAttackRange') + "%");
     }
     if ("slowEnemy" in gearIDs) {
         details.push("Slow: " + getIDMax(gearIDs, 'slowEnemy') + "%");
