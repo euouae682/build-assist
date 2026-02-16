@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Item from "./Item";
 import { getIndices } from "./itemFuncs";
 import { SPELL_COSTS } from "./constants";
-import { ItemList, Indices } from "./itemTypes"
+import { ItemList, Indices } from "./itemTypes";
 
 export default function Home() {
   // Form state variables - general
