@@ -247,13 +247,13 @@ export default function Home() {
           showCalcs ? <p>
             <ul>
               <li className="indent-8">- Spell index: The spell index is the damage increase of a theoretical spell which has 100% neutral spell conversion as a result of equipping an item.</li>
-              <li className="indent-8">- Melee index: The melee index is the increase in melee DPS as a result of equipping an item.</li>
-              <li className="indent-8">- Poison index: The poison index is the increase in poison DPS as a result of equipping an item. A red asterisk indicates that the item has negative poison, potentially negating the gains from other gear.</li>
+              <li className="indent-8">- Melee index: The melee index is the increase in melee DPS as a result of equipping an item, assuming that item is the only one being used.</li>
+              <li className="indent-8">- Skill point (SP) index: The skill point index is the total SP gained in the relevant SP. It does not count SP that is excluded by the user. A red asterisk indicates that the item has negative SP in non-excluded SP.</li>
               <li className="indent-8">- Mana index: The mana index is the approximate mana value saved per second as a result of equipping an item. A red asterisk indicates that the gear uses percent spell costs, which is dependent on the original cost, ability tree cost reductions, and raw spell cost reductions from other pieces.</li>
-              <li className="indent-8">- Skill point index: The skill point index is the total SP gained in the relevant SP. Tt does not count SP that is excluded by the user. A red asterisk indicates that the item has negative SP in non-excluded SP.</li>
               <li className="indent-8">- Health index: The skill point index is the total health gain from the item. A red asterisk indicates that some or all of the health is rollable.</li>
-              <li className="indent-8">- Health sustain index: The health sustain index is the approximate health regenerated per second as a result of equipping an item. A red asterisk indicates that the item has health regen %, which may positively or negatively affect bonuses from other gear.</li>
-              <li className="indent-8">- Walkspeed index: The walkspeed index is simply the walkspeed on the item.</li>
+              <li className="indent-8">- Life sustain index: The health sustain index is the approximate health regenerated per second as a result of equipping an item.</li>
+              <li className="indent-8">- Other IDs index: The other IDs index lists other IDs which may be important to a build, i.e. walkspeed, healing efficiency, or max mana.</li>
+              <li className="indent-8">- Minor IDs index: The minor IDs index lists flavor IDs that generally arent too important for builds, such as thorns, reflection, and sprint.</li>
             </ul>
             Indices are meant to be easily calculated, and generalisable to a class’ various archetypes/playstyles. For this reason, they exclude specific aspects of the damage calculation process, introducing inaccuracies. Index calculations exclude:
             <ul>

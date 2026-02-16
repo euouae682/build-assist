@@ -642,6 +642,9 @@ export const getOtherDetails = (gear: WynnItem): string[] => {
     if ("lootBonus" in gearIDs) {
         details.push("Loot Bonus: " + getIDMax(gearIDs, 'lootBonus') + "%");
     }
+    if ("exploding" in gearIDs) {
+        details.push("Exploding: " + getIDMax(gearIDs, 'exploding') + "%");
+    }
     return details;
 }
 
@@ -656,9 +659,6 @@ export const getMinorDetails = (gear: WynnItem): string[] => {
     }
     if ("reflection" in gearIDs) {
         details.push("Reflection: " + getIDMax(gearIDs, 'reflection') + "%");
-    }
-    if ("exploding" in gearIDs) {
-        details.push("Exploding: " + getIDMax(gearIDs, 'exploding') + "%");
     }
     if ("stealing" in gearIDs) {
         details.push("Stealing: " + getIDMax(gearIDs, 'stealing') + "%");
