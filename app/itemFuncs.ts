@@ -4,6 +4,10 @@ import { WynnItem, Damage, IDs, Indices } from "./itemTypes";
 // Used for life sustain calc, equal to approximately 20% of average build HP
 const APPROX_HEAL = 2500;
 
+// Used for evasion index calc
+const JUMP_HEIGHT_MULT = 0.1;
+const MELEE_RANGE_MULT = 0.5;
+
 // Get the base damages/base attack speed of a weapon
 const getDamages = (weapon: WynnItem): Damage => {
     const base = weapon['base']
@@ -372,8 +376,8 @@ export const getLifeIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs, 
     return calcLifeSustain(accumulatedIDs, steals) - calcLifeSustain(weaponIDs, steals) + (heals ? (getIDMax(gearIDs, 'healingEfficiency') / 100) * APPROX_HEAL : 0);
 }
 
-export const getEvasionIndex = (gearIDs: IDs): number => {
-    return getIDMax(gearIDs, "walkSpeed");
+export const getEvasionIndex = (gearIDs: IDs, range: boolean): number => {
+    return getIDMax(gearIDs, "walkSpeed") + (getIDMax(gearIDs, "jumpHeight") * JUMP_HEIGHT_MULT) + (range ? getIDMax(gearIDs, "mainAttackRange") * MELEE_RANGE_MULT : 0);
 }
 
 export const getGeneralDetails = (gear: WynnItem): string[] => {
@@ -709,7 +713,7 @@ export const getItemDetails = (baseDps: number, gear: WynnItem): string[][] => {
     ];
 }
 
-export const getIndices = (weapon: WynnItem, powdering: string, gearName: string, gear: WynnItem, steals: boolean, heals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
+export const getIndices = (weapon: WynnItem, powdering: string, gearName: string, gear: WynnItem, steals: boolean, heals: boolean, range: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
     const powdersToApply: Powder[] = compressPowders(powdering);
     const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
@@ -750,7 +754,7 @@ export const getIndices = (weapon: WynnItem, powdering: string, gearName: string
             details: gearDetails[7]
         },
         evasion: {
-            value: getEvasionIndex(gearIDs),
+            value: getEvasionIndex(gearIDs, range),
             details: gearDetails[8]
         },
         other: {
@@ -764,7 +768,7 @@ export const getIndices = (weapon: WynnItem, powdering: string, gearName: string
     };
 }
 
-export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTier: number, steals: boolean, heals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
+export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTier: number, steals: boolean, heals: boolean, range: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
 
     const powderSlots = 'powderSlots' in weapon ? weapon['powderSlots'] : 0;
@@ -833,7 +837,7 @@ export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTie
             details: weaponDetails[7]
         },
         evasion: {
-            value: getIDMax(weaponIDs, 'walkSpeed'),
+            value: getEvasionIndex(weaponIDs, range),
             details: weaponDetails[8]
         },
         other: {

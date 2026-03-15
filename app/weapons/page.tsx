@@ -16,6 +16,7 @@ export default function Home() {
   // Form state variables - CPS/Steals
   const [useSteals, setUseSteals] = useState(true);
   const [useHealing, setUseHealing] = useState(false);
+  const [useRange, setUseRange] = useState(false);
   const [cps, setCps] = useState(6);
   const [spellCycle, setSpellCycle] = useState('1234');
   const [int, setInt] = useState('60');
@@ -75,7 +76,7 @@ export default function Home() {
     let indicesList: Indices[] = [];
     if (itemsList != null && weaponsList != null) {
       weaponsList.map((weaponName) => {
-        indicesList.push(getWeaponIndices(weaponName, itemsList[weaponName], powderTier, useSteals, useHealing, cps, spellCycle, costs, sp));
+        indicesList.push(getWeaponIndices(weaponName, itemsList[weaponName], powderTier, useSteals, useHealing, useRange, cps, spellCycle, costs, sp));
       })
     }
 
@@ -111,7 +112,7 @@ export default function Home() {
     setPowderTier(Number(e.target.value));
   }
 
-  const onPlaystyleChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+  const onStealsChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     if (e.target.value === "regen") {
       setUseSteals(false);
     }
@@ -120,7 +121,7 @@ export default function Home() {
     }
   }
 
-  const onPlaystyle2Change = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+  const onHealsChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     if (e.target.value === "noheal") {
       setUseHealing(false);
     }
@@ -129,6 +130,14 @@ export default function Home() {
     }
   }
 
+  const onRangeChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    if (e.target.value === "norange") {
+      setUseRange(false);
+    }
+    else {
+      setUseRange(true);
+    }
+  }
 
   const onCPSChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setCps(e.target.valueAsNumber);
@@ -215,22 +224,6 @@ export default function Home() {
 
         <h2 className="text-xl font-bold">Playstyle</h2>
         <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
-          <label htmlFor="playstyle">Consider Steals: </label>
-          <select id="playstyle" name="playstyle" className="rounded-md p-1 hotransition cursor-pointer" value={useSteals ? "steals" : "regen"} onChange={onPlaystyleChange}>
-            <option value="steals">True</option>
-            <option value="regen">False</option>
-          </select>
-        </div>
-
-        <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
-          <label htmlFor="playstyle2">Consider Ability Healing: </label>
-          <select id="playstyle2" name="playstyle2" className="rounded-md p-1 hotransition cursor-pointer" value={useHealing ? "heal" : "noheal"} onChange={onPlaystyle2Change}>
-            <option value="heal">True</option>
-            <option value="noheal">False</option>
-          </select>
-        </div>
-
-        <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="cps">CPS: </label>
           <input type="number" id="cps" name="cps" className="rounded-md p-1 transition w-16" value={cps} onChange={onCPSChange} />
         </div>
@@ -247,6 +240,31 @@ export default function Home() {
             <option value="30">30 int</option>
             <option value="60">60 int</option>
             <option value="120">120 int</option>
+          </select>
+        </div>
+
+        <h2 className="text-xl font-bold">Preferences</h2>
+        <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
+          <label htmlFor="steals">Consider Steals: </label>
+          <select id="steals" name="steals" className="rounded-md p-1 hotransition cursor-pointer" value={useSteals ? "steals" : "regen"} onChange={onStealsChange}>
+            <option value="steals">True</option>
+            <option value="regen">False</option>
+          </select>
+        </div>
+
+        <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
+          <label htmlFor="heals">Consider Ability Healing: </label>
+          <select id="heals" name="heals" className="rounded-md p-1 hotransition cursor-pointer" value={useHealing ? "heal" : "noheal"} onChange={onHealsChange}>
+            <option value="heal">True</option>
+            <option value="noheal">False</option>
+          </select>
+        </div>
+
+        <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
+          <label htmlFor="range">Consider Melee Range: </label>
+          <select id="range" name="range" className="rounded-md p-1 hotransition cursor-pointer" value={useRange ? "range" : "norange"} onChange={onRangeChange}>
+            <option value="range">True</option>
+            <option value="norange">False</option>
           </select>
         </div>
 
