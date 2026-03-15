@@ -1,6 +1,9 @@
 import { POWDERS, ATK_MULTIPLIERS, Powder } from "./constants";
 import { WynnItem, Damage, IDs, Indices } from "./itemTypes";
 
+// Used for life sustain calc, equal to approximately 20% of average build HP
+const APPROX_HEAL = 2500;
+
 // Get the base damages/base attack speed of a weapon
 const getDamages = (weapon: WynnItem): Damage => {
     const base = weapon['base']
@@ -365,8 +368,12 @@ export const getHealthIndex = (gear: WynnItem, gearIDs: IDs): number => {
     return baseHP + extraHP;
 }
 
-export const getLifeIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs, steals: boolean): number => {
-    return calcLifeSustain(accumulatedIDs, steals) - calcLifeSustain(weaponIDs, steals);
+export const getLifeIndex = (weaponIDs: IDs, gearIDs: IDs, accumulatedIDs: IDs, steals: boolean, heals: boolean): number => {
+    return calcLifeSustain(accumulatedIDs, steals) - calcLifeSustain(weaponIDs, steals) + (heals ? (getIDMax(gearIDs, 'healingEfficiency') / 100) * APPROX_HEAL : 0);
+}
+
+export const getEvasionIndex = (gearIDs: IDs): number => {
+    return getIDMax(gearIDs, "walkSpeed");
 }
 
 export const getGeneralDetails = (gear: WynnItem): string[] => {
@@ -456,7 +463,8 @@ export const getSpellDetails = (gear: WynnItem): string[] => {
         getPhrase(gearIDs, "fireDamage", "Fire", true),
         getPhrase(gearIDs, "fireSpellDamage", "Fire Spell", true),
         getPhrase(gearIDs, "airDamage", "Air", true),
-        getPhrase(gearIDs, "airSpellDamage", "Air Spell", true)
+        getPhrase(gearIDs, "airSpellDamage", "Air Spell", true),
+        getPhrase(gearIDs, "criticalDamageBonus", "Crit Damage", true)
     ]
     details.filter((phrase) => phrase != "");
     return details;
@@ -509,6 +517,9 @@ export const getManaDetails = (gear: WynnItem): string[] => {
     }
     if ("manaSteal" in gearIDs) {
         details.push("Mana Steal: " + getIDMax(gearIDs, 'manaSteal') + "/3s");
+    }
+    if ("rawMaxMana" in gearIDs) {
+        details.push("Max Mana: " + getIDMax(gearIDs, 'rawMaxMana'));
     }
     return details;
 }
@@ -587,6 +598,9 @@ export const getHealthDetails = (gear: WynnItem): string[] => {
     if ("elementalDefence" in gearIDs) {
         details.push("Elemt. Def: " + getIDMax(gearIDs, 'elementalDefence') + "%");
     }
+    if ("weakenEnemy" in gearIDs) {
+        details.push("Weaken: " + getIDMax(gearIDs, 'weakenEnemy') + "%");
+    }
     return details;
 }
 
@@ -603,8 +617,33 @@ export const getLifeDetails = (gear: WynnItem): string[] => {
     if ("lifeSteal" in gearIDs) {
         details.push("Life Steal: " + getIDMax(gearIDs, 'lifeSteal') + "/3s");
     }
+    if ("healingEfficiency" in gearIDs) {
+        details.push("Healing: " + getIDMax(gearIDs, 'healingEfficiency') + "%");
+    }
     return details;
 }
+
+export const getEvasionDetails = (gear: WynnItem): string[] => {
+    let details: string[] = [];
+    let gearIDs: IDs = {};
+    if ("identifications" in gear) {
+        gearIDs = gear['identifications'];
+    }
+    if ("walkSpeed" in gearIDs) {
+        details.push("Walkspeed: " + getIDMax(gearIDs, 'walkSpeed') + "%");
+    }
+    if ("mainAttackRange" in gearIDs) {
+        details.push("Melee Range: " + getIDMax(gearIDs, 'mainAttackRange') + "%");
+    }
+    if ("jumpHeight" in gearIDs) {
+        details.push("Jump Height: " + getIDMax(gearIDs, 'jumpHeight'));
+    }
+    if ("slowEnemy" in gearIDs) {
+        details.push("Slow: " + getIDMax(gearIDs, 'slowEnemy') + "%");
+    }
+    return details;
+}
+
 
 export const getOtherDetails = (gear: WynnItem): string[] => {
     let details: string[] = [];
@@ -612,38 +651,17 @@ export const getOtherDetails = (gear: WynnItem): string[] => {
     if ("identifications" in gear) {
         gearIDs = gear['identifications'];
     }
+    if ("exploding" in gearIDs) {
+        details.push("Exploding: " + getIDMax(gearIDs, 'exploding') + "%");
+    }
     if ("poison" in gearIDs) {
         details.push("Poison: " + getIDMax(gearIDs, 'poison') + "/3s");
-    }
-    if ("walkSpeed" in gearIDs) {
-        details.push("Walkspeed: " + getIDMax(gearIDs, 'walkSpeed') + "%");
-    }
-    if ("jumpHeight" in gearIDs) {
-        details.push("Jump Height: " + getIDMax(gearIDs, 'jumpHeight'));
-    }
-    if ("healingEfficiency" in gearIDs) {
-        details.push("Healing: " + getIDMax(gearIDs, 'healingEfficiency') + "%");
-    }
-    if ("rawMaxMana" in gearIDs) {
-        details.push("Max Mana: " + getIDMax(gearIDs, 'rawMaxMana'));
-    }
-    if ("mainAttackRange" in gearIDs) {
-        details.push("Melee Range: " + getIDMax(gearIDs, 'mainAttackRange') + "%");
-    }
-    if ("slowEnemy" in gearIDs) {
-        details.push("Slow: " + getIDMax(gearIDs, 'slowEnemy') + "%");
-    }
-    if ("weakenEnemy" in gearIDs) {
-        details.push("Weaken: " + getIDMax(gearIDs, 'weakenEnemy') + "%");
     }
     if ("xpBonus" in gearIDs) {
         details.push("XP Bonus: " + getIDMax(gearIDs, 'xpBonus') + "%");
     }
     if ("lootBonus" in gearIDs) {
         details.push("Loot Bonus: " + getIDMax(gearIDs, 'lootBonus') + "%");
-    }
-    if ("exploding" in gearIDs) {
-        details.push("Exploding: " + getIDMax(gearIDs, 'exploding') + "%");
     }
     return details;
 }
@@ -685,12 +703,13 @@ export const getItemDetails = (baseDps: number, gear: WynnItem): string[][] => {
         getSkillPointDetails(gear), 
         getHealthDetails(gear), 
         getLifeDetails(gear), 
+        getEvasionDetails(gear),
         getOtherDetails(gear), 
         getMinorDetails(gear)
     ];
 }
 
-export const getIndices = (weapon: WynnItem, powdering: string, gearName: string, gear: WynnItem, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
+export const getIndices = (weapon: WynnItem, powdering: string, gearName: string, gear: WynnItem, steals: boolean, heals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
     const powdersToApply: Powder[] = compressPowders(powdering);
     const powderedDamage: Damage = applyPowders(baseDamage, powdersToApply);
@@ -727,21 +746,25 @@ export const getIndices = (weapon: WynnItem, powdering: string, gearName: string
             details: gearDetails[6]
         },
         life: {
-            value: getLifeIndex(weaponIDs, gearIDs, accumulatedIDs, steals),
+            value: getLifeIndex(weaponIDs, gearIDs, accumulatedIDs, steals, heals),
             details: gearDetails[7]
         },
-        other: {
-            value: gearDetails[8].length,
+        evasion: {
+            value: getEvasionIndex(gearIDs),
             details: gearDetails[8]
         },
-        minor: {
+        other: {
             value: gearDetails[9].length,
             details: gearDetails[9]
+        },
+        minor: {
+            value: gearDetails[10].length,
+            details: gearDetails[10]
         }
     };
 }
 
-export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTier: number, steals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
+export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTier: number, steals: boolean, heals: boolean, cps: number, spellCycle: string, costs: [number, number, number, number], sp: [boolean, boolean, boolean, boolean, boolean]): Indices => {
     const baseDamage: Damage = getDamages(weapon);
 
     const powderSlots = 'powderSlots' in weapon ? weapon['powderSlots'] : 0;
@@ -806,16 +829,20 @@ export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTie
             details: weaponDetails[6]
         },
         life: {
-            value: calcLifeSustain(weaponIDs, steals),
+            value: calcLifeSustain(weaponIDs, steals) + (heals ? (getIDMax(weaponIDs, 'healingEfficiency') / 100) * APPROX_HEAL : 0),
             details: weaponDetails[7]
         },
-        other: {
-            value: weaponDetails[8].length,
+        evasion: {
+            value: getIDMax(weaponIDs, 'walkSpeed'),
             details: weaponDetails[8]
         },
-        minor: {
+        other: {
             value: weaponDetails[9].length,
             details: weaponDetails[9]
+        },
+        minor: {
+            value: weaponDetails[10].length,
+            details: weaponDetails[10]
         }
     };
 }

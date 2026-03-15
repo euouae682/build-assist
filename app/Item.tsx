@@ -60,32 +60,23 @@ export default function Item({ toggleBg, index }: ItemProps) {
     return (
         <section style={{backgroundColor: toggleBg ? 'var(--dark-cell)' : 'var(--light-cell)'}} className="p-2 text-sm">
             <div className="flex">
-                <p style={{color: getRarityColor(index.general.rarity)}} className="w-64 cursor-pointer hover:opacity-40 transition-all" onClick={onNameClick} >Lv. {index.general.level} { index.general.name }</p>
-                <p style={{color: getSignColor(index.spell.value)}} className="w-48">{ index.spell.value.toFixed(2) }</p>
-                <p style={{color: getSignColor(index.melee.value)}} className="w-48">{ index.melee.value.toFixed(2) } <em style={{color: "white"}}>
+                <p style={{color: getRarityColor(index.general.rarity)}} className="w-72 cursor-pointer hover:opacity-40 transition-all" onClick={onNameClick} >Lv. {index.general.level} { index.general.name }</p>
+                <p style={{color: getSignColor(index.skillPoints.value)}} className="w-24">{ index.skillPoints.value }</p>
+                <p style={{color: getSignColor(index.spell.value)}} className="w-40">{ index.spell.value.toFixed(2) }</p>
+                <p style={{color: getSignColor(index.melee.value)}} className="w-40">{ index.melee.value.toFixed(2) } <em style={{color: "white"}}>
                     { index.melee.details[index.melee.details.length - 1].startsWith("Atk Speed: -") ? " (drop)" : (index.melee.details[index.melee.details.length - 1].startsWith("Atk Speed") ? " (tier)" : "") }</em>
                 </p>
-                <p style={{color: getSignColor(index.skillPoints.value)}} className="w-24">{ index.skillPoints.value }</p>
-                <p style={{color: getSignColor(index.mana.value)}} className="w-48">{ index.mana.value.toFixed(2) }</p>
-                <p style={{color: getSignColor(index.health.value)}} className="w-48">{ index.health.value }</p>
-                <p style={{color: getSignColor(index.life.value)}} className="w-48">{ index.life.value.toFixed(2) }</p>
-                <p className="w-48">{ index.other.value }</p>
-                <p className="w-48">{ index.minor.value }</p>
+                <p style={{color: getSignColor(index.mana.value)}} className="w-40">{ index.mana.value.toFixed(2) }</p>
+                <p style={{color: getSignColor(index.health.value)}} className="w-40">{ index.health.value }</p>
+                <p style={{color: getSignColor(index.life.value)}} className="w-40">{ index.life.value.toFixed(2) }</p>
+                <p style={{color: getSignColor(index.evasion.value)}} className="w-40">{ index.evasion.value.toFixed(2) }</p>
+                <p className="w-40">{ index.other.value }</p>
+                <p className="w-40">{ index.minor.value }</p>
             </div>
             { showDetails &&
             <div className="pt-2 flex text-slate-400 text-xs">
-                <div className="flex flex-col w-64">
+                <div className="flex flex-col w-72">
                     { index.general.details.map((phrase) => {
-                        return <p key={phrase}>{ phrase }</p>
-                    }) }
-                </div>
-                <div className="flex flex-col w-48">
-                    { index.spell.details.map((phrase) => {
-                        return <p key={phrase}>{ phrase }</p>
-                    }) }
-                </div>
-                <div className="flex flex-col w-48">
-                    { index.melee.details.map((phrase) => {
                         return <p key={phrase}>{ phrase }</p>
                     }) }
                 </div>
@@ -94,27 +85,42 @@ export default function Item({ toggleBg, index }: ItemProps) {
                         return <p key={phrase}>{ phrase }</p>
                     }) }
                 </div>
-                <div className="flex flex-col w-48">
+                <div className="flex flex-col w-40">
+                    { index.spell.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
+                </div>
+                <div className="flex flex-col w-40">
+                    { index.melee.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
+                </div>
+                <div className="flex flex-col w-40">
                     { index.mana.details.map((phrase) => {
                         return <p key={phrase}>{ phrase }</p>
                     }) }
                 </div>
-                <div className="flex flex-col w-48">
+                <div className="flex flex-col w-40">
                     { index.health.details.map((phrase) => {
                         return <p key={phrase}>{ phrase }</p>
                     }) }
                 </div>
-                <div className="flex flex-col w-48">
+                <div className="flex flex-col w-40">
                     { index.life.details.map((phrase) => {
                         return <p key={phrase}>{ phrase }</p>
                     }) }
                 </div>
-                <div className="flex flex-col w-48">
+                <div className="flex flex-col w-40">
+                    { index.evasion.details.map((phrase) => {
+                        return <p key={phrase}>{ phrase }</p>
+                    }) }
+                </div>
+                <div className="flex flex-col w-40">
                     { index.other.details.map((phrase) => {
                         return <p key={phrase}>{ phrase }</p>
                     }) }
                 </div>
-                <div className="flex flex-col w-48">
+                <div className="flex flex-col w-40">
                     { index.minor.details.map((phrase) => {
                         return <p key={phrase}>{ phrase }</p>
                     }) }

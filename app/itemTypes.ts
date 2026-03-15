@@ -53,6 +53,7 @@ export type Indices = {
   skillPoints: Index
   health: Index,
   life: Index,
+  evasion: Index,
   other: Index,
   minor: Index
 }

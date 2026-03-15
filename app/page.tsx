@@ -18,6 +18,7 @@ export default function Home() {
 
   // Form state variables - CPS/Steals
   const [useSteals, setUseSteals] = useState(true);
+  const [useHealing, setUseHealing] = useState(false);
   const [cps, setCps] = useState(6);
   const [spellCycle, setSpellCycle] = useState('1234');
   const [int, setInt] = useState('60');
@@ -118,19 +119,19 @@ export default function Home() {
     let indicesList: Indices[] = [];
     if (itemsList != null && gearList != null) {
       gearList.map((gearName) => {
-        indicesList.push(getIndices(itemsList[weapon], powdering, gearName, itemsList[gearName], useSteals, cps, spellCycle, costs, sp));
+        indicesList.push(getIndices(itemsList[weapon], powdering, gearName, itemsList[gearName], useSteals, useHealing, cps, spellCycle, costs, sp));
       })
     }
 
     if (sortBy === "spell" || sortBy === "melee"  
       || sortBy === "mana" || sortBy === "skillPoints" || sortBy === "health"
-      || sortBy === "life") {
+      || sortBy === "life" || sortBy === "evasion") {
       sortList(indicesList, sortBy);
     }
     setIndices(indicesList.slice(0, showAmt));
   }
 
-  const sortList = (list: Indices[], key: "spell" | "melee" | "mana" | "skillPoints" | "health" | "life"): Indices[] => {
+  const sortList = (list: Indices[], key: "spell" | "melee" | "mana" | "skillPoints" | "health" | "life" | "evasion"): Indices[] => {
     if (list !== null) {
       // if (key === "major") {
       //   return list.sort((index1, index2) => index2["major"][0].localeCompare(index1["major"][0]))
@@ -167,6 +168,15 @@ export default function Home() {
     }
     else {
       setUseSteals(true);
+    }
+  }
+
+  const onPlaystyle2Change = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    if (e.target.value === "noheal") {
+      setUseHealing(false);
+    }
+    else {
+      setUseHealing(true);
     }
   }
 
@@ -298,10 +308,18 @@ export default function Home() {
 
         <h2 className="text-xl font-bold">Playstyle</h2>
         <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
-          <label htmlFor="playstyle">Playstyle: </label>
+          <label htmlFor="playstyle">Consider Steals: </label>
           <select id="playstyle" name="playstyle" className="rounded-md p-1 transition cursor-pointer" value={useSteals ? "steals" : "regen"} onChange={onPlaystyleChange}>
-            <option value="steals">Hybrid or Melee (MR/MS)</option>
-            <option value="regen">Spellspam (Only MR)</option>
+            <option value="steals">True</option>
+            <option value="regen">False</option>
+          </select>
+        </div>
+
+        <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
+          <label htmlFor="playstyle2">Consider Ability Healing: </label>
+          <select id="playstyle2" name="playstyle2" className="rounded-md p-1 transition cursor-pointer" value={useHealing ? "heal" : "noheal"} onChange={onPlaystyle2Change}>
+            <option value="heal">True</option>
+            <option value="noheal">False</option>
           </select>
         </div>
 
@@ -365,16 +383,13 @@ export default function Home() {
         <div>
           <label htmlFor="playstyle">Sort By: </label>
           <select id="sortby" name="sortby" className="rounded-md p-1 transition cursor-pointer" onChange={onSortByChange}>
+            <option value="skillPoints">Skill Points</option>
             <option value="spell">Spell Damage</option>
             <option value="melee">Melee Damage</option>
-            {/* <option value="poison">Poison</option> */}
             <option value="mana">Mana Sustain</option>
-            <option value="skillPoints">Skill Points</option>
-            <option value="health">Health</option>
-            {/* <option value="walkspeed">Walkspeed</option> */}
+            <option value="health">Bulk</option>
             <option value="life">Life Sustain</option>
-            {/* <option value="healing">Healing</option>
-            <option value="major">Major ID</option> */}
+            <option value="evasion">Evasion</option>
           </select> 
         </div>
 
@@ -397,15 +412,16 @@ export default function Home() {
         <h2 className="text-xl font-bold">Results</h2>
         <div className="border border-slate-600">
           <div className="m-2 flex text-sm">
-            <p className="w-64 font-bold">Name</p>
-            <p className="w-48 font-bold">Spell</p>
-            <p className="w-48 font-bold">Melee</p>
+            <p className="w-72 font-bold">Name</p>
             <p className="w-24 font-bold">SP</p>
-            <p className="w-48 font-bold">Mana</p>
-            <p className="w-48 font-bold">Health</p>
-            <p className="w-48 font-bold">Life Sustain</p>
-            <p className="w-48 font-bold">Other</p>
-            <p className="w-48 font-bold">Minor</p>
+            <p className="w-40 font-bold">Spell</p>
+            <p className="w-40 font-bold">Melee</p>
+            <p className="w-40 font-bold">Mana</p>
+            <p className="w-40 font-bold">Bulk</p>
+            <p className="w-40 font-bold">Sustain</p>
+            <p className="w-40 font-bold">Evasion</p>
+            <p className="w-40 font-bold">Other</p>
+            <p className="w-40 font-bold">Minor</p>
           </div>
           {
             indices ? indices.map((index) => {
