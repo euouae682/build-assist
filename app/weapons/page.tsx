@@ -9,9 +9,9 @@ import { SPELL_COSTS } from "../constants";
 export default function Home() {
   // Form state variables - general
   const [weaponType, setWeaponType] = useState('');
-  const [powderTier, setPowderTier] = useState(6);
+  const [powderTier, setPowderTier] = useState(7);
   const [sp, setSp] = useState<[boolean, boolean, boolean, boolean, boolean]>([false, false, false, false, false]);
-  const [levelReq, setLevelReq] = useState(105);
+  const [levelReq, setLevelReq] = useState(120);
 
   // Form state variables - CPS/Steals
   const [useSteals, setUseSteals] = useState(true);
@@ -211,7 +211,7 @@ export default function Home() {
 
         <div className="transition-all">
           <label htmlFor="ptier">Powder Tier: </label>
-          <select id="ptier" name="ptier" className="rounded-md p-1 transition cursor-pointer" defaultValue="6" onChange={onPowderChange}>
+          <select id="ptier" name="ptier" className="rounded-md p-1 transition cursor-pointer" defaultValue="7" onChange={onPowderChange}>
             <option value="7">VII</option>
             <option value="6">VI</option>
             <option value="5">V</option>

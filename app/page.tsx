@@ -14,7 +14,7 @@ export default function Home() {
   const [powdering, setPowdering] = useState('');
   const [gearType, setGearType] = useState('all');
   const [sp, setSp] = useState<[boolean, boolean, boolean, boolean, boolean]>([false, false, false, false, false]);
-  const [levelReq, setLevelReq] = useState(105);
+  const [levelReq, setLevelReq] = useState(120);
 
   // Form state variables - CPS/Steals
   const [useSteals, setUseSteals] = useState(true);
