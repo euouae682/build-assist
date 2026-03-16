@@ -313,7 +313,7 @@ export default function Home() {
 
         <div className={powderSlots === 0 ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="pwd">Powdering: </label>
-          <input type="text" id="pwd" name="pwd" className="rounded-md p-1 transition" pattern={"([etwfa][1-6]){" + powderSlots + "}"} placeholder={powderSlots + " slots"} value={powdering} onChange={onPowderingChange} />
+          <input type="text" id="pwd" name="pwd" className="rounded-md p-1 transition" pattern={"([etwfa][1-7]){" + powderSlots + "}"} placeholder={powderSlots + " slots"} value={powdering} onChange={onPowderingChange} />
         </div> 
 
         <h2 className="text-xl font-bold">Playstyle</h2>

@@ -212,6 +212,7 @@ export default function Home() {
         <div className="transition-all">
           <label htmlFor="ptier">Powder Tier: </label>
           <select id="ptier" name="ptier" className="rounded-md p-1 transition cursor-pointer" defaultValue="6" onChange={onPowderChange}>
+            <option value="7">VII</option>
             <option value="6">VI</option>
             <option value="5">V</option>
             <option value="4">IV</option>
