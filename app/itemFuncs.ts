@@ -726,7 +726,7 @@ export const getIndices = (weapon: WynnItem, powdering: string, gearName: string
         general: {
             name: gearName,
             level: gear['requirements']['level'],
-            rarity: gear['rarity'],
+            rarity: gear['tier'],
             details: gearDetails[0]
         },
         spell: {
@@ -805,7 +805,7 @@ export const getWeaponIndices = (weaponName: string, weapon: WynnItem, powderTie
         general: {
             name: weaponName + " " + powderStr,
             level: weapon['requirements']['level'],
-            rarity: weapon['rarity'],
+            rarity: weapon['tier'],
             details: weaponDetails[0]
         },
         baseDps: {

@@ -57,8 +57,7 @@ export default function Home() {
           else if (gearType === 'accessories') {
             return 'accessoryType' in item[1];
           }
-          return (('weaponType' in item[1] && item[1]['weaponType'] === gearType) || 
-          ('armourType' in item[1] && item[1]['armourType'] === gearType) ||
+          return (('subType' in item[1] && item[1]['subType'] === gearType) ||
           ('accessoryType' in item[1] && item[1]['accessoryType'] === gearType));
         })
         .filter((item) => {
@@ -95,7 +94,7 @@ export default function Home() {
   const filterWeapons = (type: string): void => {
     if (itemsList !== null) {
       setWeaponsList(Object.entries(itemsList)
-        .filter((item) => 'weaponType' in item[1] && item[1]['weaponType'] === type)
+        .filter((item) => 'subType' in item[1] && item[1]['subType'] === type)
         .map((item) => item[0])
         .sort()
       );
@@ -372,8 +371,8 @@ export default function Home() {
             <option value="accessories">Accessories</option>
             <option value="helmet">Helmet</option>
             <option value="chestplate">Chestplate</option>
-            <option value="leggings">Leggings</option>
-            <option value="boots">Boots</option>
+            <option value="legging">Leggings</option>
+            <option value="boot">Boots</option>
             <option value="ring">Ring</option>
             <option value="bracelet">Bracelet</option>
             <option value="necklace">Necklace</option>
