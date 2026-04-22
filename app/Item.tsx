@@ -63,7 +63,7 @@ export default function Item({ toggleBg, index }: ItemProps) {
                 <p style={{color: getRarityColor(index.general.rarity)}} className="w-72 cursor-pointer hover:opacity-40 transition-all" onClick={onNameClick} >Lv. {index.general.level} { index.general.name }</p>
                 <p style={{color: getSignColor(index.skillPoints.value)}} className="w-24">{ index.skillPoints.value }</p>
                 <p style={{color: getSignColor(index.spell.value)}} className="w-40">{ index.spell.value.toFixed(2) }</p>
-                <p style={{color: getSignColor(index.melee.value)}} className="w-40">{ index.melee.value.toFixed(2) } <em style={{color: "white"}}>
+                <p style={{color: getSignColor(index.melee.value)}} className="w-40">{ index.melee.value.toFixed(2) } <em>
                     { index.melee.details[index.melee.details.length - 1].startsWith("Atk Speed: -") ? " (drop)" : (index.melee.details[index.melee.details.length - 1].startsWith("Atk Speed") ? " (tier)" : "") }</em>
                 </p>
                 <p style={{color: getSignColor(index.mana.value)}} className="w-40">{ index.mana.value.toFixed(2) }</p>
