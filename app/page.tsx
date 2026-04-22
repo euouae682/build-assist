@@ -55,7 +55,7 @@ export default function Home() {
             return 'type' in item[1] && (item[1]['type'] === 'armour');
           }
           else if (gearType === 'accessories') {
-            return 'accessoryType' in item[1];
+            return 'type' in item[1] && item[1]['type'] === 'accessory';
           }
           return (('subType' in item[1] && item[1]['subType'] === gearType) ||
           ('accessoryType' in item[1] && item[1]['accessoryType'] === gearType));
@@ -371,8 +371,8 @@ export default function Home() {
             <option value="accessories">Accessories</option>
             <option value="helmet">Helmet</option>
             <option value="chestplate">Chestplate</option>
-            <option value="legging">Leggings</option>
-            <option value="boot">Boots</option>
+            <option value="leggings">Leggings</option>
+            <option value="boots">Boots</option>
             <option value="ring">Ring</option>
             <option value="bracelet">Bracelet</option>
             <option value="necklace">Necklace</option>
