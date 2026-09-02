@@ -7,6 +7,8 @@ export type IDs = {
 }
 
 export type WynnItem = {
+  displayName: string,
+  internalName: string,
   tier: string,
   powderSlots?: number,
   type: string,

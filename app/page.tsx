@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Item from "./Item";
-import { getIndices } from "./itemFuncs";
+import { getIndices, findItemByName } from "./itemFuncs";
 import { SPELL_COSTS } from "./constants";
-import { ItemList, Indices } from "./itemTypes";
+import { WynnItem, Indices } from "./itemTypes";
 
 export default function Home() {
   // Form state variables - general
@@ -30,9 +30,9 @@ export default function Home() {
   const [showAmt, setShowAmt] = useState(100);
 
   // Data state variables
-  const [itemsList, setItemsList] = useState<ItemList | null>(null);
-  const [weaponsList, setWeaponsList] = useState<string[] | null>(null);
-  const [gearList, setGearList] = useState<string[] | null>(null);
+  const [itemsList, setItemsList] = useState<WynnItem[] | null>(null);
+  const [weaponsList, setWeaponsList] = useState<WynnItem[] | null>(null);
+  const [gearList, setGearList] = useState<WynnItem[] | null>(null);
   const [indices, setIndices] = useState<Indices[] | null>(null);
 
   // Aesthetic state variables
@@ -45,57 +45,61 @@ export default function Home() {
 
   useEffect(() => {
     if (itemsList !== null) {
-      setGearList(Object.entries(itemsList)
+      setGearList(itemsList
         .filter((item) => {
           if (gearType === 'all') {
-            return ('type' in item[1] && (item[1]['type'] === 'armour' 
-              || item[1]['type'] === 'accessory'));
+            return ('type' in item && (item['type'] === 'armour' 
+              || item['type'] === 'accessory'));
           }
           else if (gearType === 'armor') {
-            return 'type' in item[1] && (item[1]['type'] === 'armour');
+            return 'type' in item && (item['type'] === 'armour');
           }
           else if (gearType === 'accessories') {
-            return 'type' in item[1] && item[1]['type'] === 'accessory';
+            return 'type' in item && item['type'] === 'accessory';
           }
-          return (('subType' in item[1] && item[1]['subType'] === gearType) ||
-          ('accessoryType' in item[1] && item[1]['accessoryType'] === gearType));
+          return (('subType' in item && item['subType'] === gearType) ||
+          ('accessoryType' in item && item['accessoryType'] === gearType));
         })
         .filter((item) => {
-          if (item[1]['requirements']['level'] > levelReq) {
+          if (item['requirements']['level'] > levelReq) {
             return false;
           }
-          if (sp[0] && 'strength' in item[1]['requirements']) {
+          if (sp[0] && 'strength' in item['requirements']) {
             return false;
           }
-          if (sp[1] && 'dexterity' in item[1]['requirements']) {
+          if (sp[1] && 'dexterity' in item['requirements']) {
             return false;
           }
-          if (sp[2] && 'intelligence' in item[1]['requirements']) {
+          if (sp[2] && 'intelligence' in item['requirements']) {
             return false;
           }
-          if (sp[3] && 'defence' in item[1]['requirements']) {
+          if (sp[3] && 'defence' in item['requirements']) {
             return false;
           }
-          if (sp[4] && 'agility' in item[1]['requirements']) {
+          if (sp[4] && 'agility' in item['requirements']) {
             return false;
           }
           return true;
         })
-        .map((item) => item[0]));
+      );
     }
   }, [itemsList, gearType, sp, levelReq])
 
+  useEffect(() => {
+      setIndices(null);
+    }, [weapon])
+
   async function getItems() {
     const response = await fetch('./data.json');
-    const json: ItemList = await response.json();
+    const json: WynnItem[] = await response.json();
+
     setItemsList(json);
   }
 
   const filterWeapons = (type: string): void => {
     if (itemsList !== null) {
-      setWeaponsList(Object.entries(itemsList)
-        .filter((item) => 'subType' in item[1] && item[1]['subType'] === type)
-        .map((item) => item[0])
+      setWeaponsList(itemsList
+        .filter((item) => 'subType' in item && item['subType'] === type)
         .sort()
       );
     }
@@ -103,8 +107,9 @@ export default function Home() {
 
   const getPowderSlots = (weapon: string): void => {
     if (itemsList !== null) {
-      if ('powderSlots' in itemsList[weapon] && itemsList[weapon]['powderSlots'] != undefined) {
-        setPowderSlots(itemsList[weapon]['powderSlots'])
+      const weaponItem = findItemByName(itemsList, weapon);
+      if (weaponItem && 'powderSlots' in weaponItem && weaponItem['powderSlots'] != undefined) {
+        setPowderSlots(weaponItem['powderSlots'])
       }
       else {
         setPowderSlots(0);
@@ -118,9 +123,14 @@ export default function Home() {
   const calculateGearBoosts = (): void => {
     let indicesList: Indices[] = [];
     if (itemsList != null && gearList != null) {
-      gearList.map((gearName) => {
-        indicesList.push(getIndices(itemsList[weapon], powdering, gearName, itemsList[gearName], useSteals, useHealing, useRange, cps, spellCycle, costs, sp));
-      })
+      const weaponItem = findItemByName(itemsList, weapon);
+      if (weaponItem) {
+        gearList.map((gearItem) => {
+          if (gearItem) {
+            indicesList.push(getIndices(weaponItem, powdering, gearItem['displayName'], gearItem, useSteals, useHealing, useRange, cps, spellCycle, costs, sp));
+          }
+        })
+      }
     }
 
     if (sortBy === "spell" || sortBy === "melee"  
@@ -302,9 +312,9 @@ export default function Home() {
         <div className={weaponType === "" ? "pointer-events-none opacity-40 select-none transition-all" : "transition-all"}>
           <label htmlFor="wpn">Weapon: </label>
           <select id="wpn" name="wpn" className="rounded-md p-1 transition cursor-pointer" onChange={onWeaponsChange}>
-            { weaponsList != null ? weaponsList.map((itemName) => {
-              return <option key={itemName} value={itemName}>
-                { itemName }
+            { weaponsList != null ? weaponsList.map((item) => {
+              return <option key={item['internalName']} value={item['internalName']}>
+                { item['displayName'] }
               </option>
             }) : <></> }
           </select>

@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { ItemList, Indices } from "../itemTypes";
+import { WynnItem, Indices } from "../itemTypes";
 import Weapon from "./Weapon";
-import { getWeaponIndices } from "../itemFuncs";
+import { getWeaponIndices, findItemByName } from "../itemFuncs";
 import { SPELL_COSTS } from "../constants";
 
 export default function Home() {
@@ -27,8 +27,8 @@ export default function Home() {
   const [showAmt, setShowAmt] = useState(100);
 
   // Data state variables
-  const [itemsList, setItemsList] = useState<ItemList | null>(null);
-  const [weaponsList, setWeaponsList] = useState<string[] | null>(null);
+  const [itemsList, setItemsList] = useState<WynnItem[] | null>(null);
+  const [weaponsList, setWeaponsList] = useState<WynnItem[] | null>(null);
   const [indices, setIndices] = useState<Indices[] | null>(null);
 
   useEffect(() => {
@@ -37,46 +37,52 @@ export default function Home() {
 
   useEffect(() => {
     if (itemsList !== null) {
-      setWeaponsList(Object.entries(itemsList)
+      setWeaponsList(itemsList
         .filter((item) => {
-          return 'subType' in item[1] && item[1]['subType'] === weaponType
+          return 'subType' in item && item['subType'] === weaponType
         })
         .filter((item) => {
-          if (item[1]['requirements']['level'] > levelReq) {
+          if (item['requirements']['level'] > levelReq) {
             return false;
           }
-          if (sp[0] && 'strength' in item[1]['requirements']) {
+          if (sp[0] && 'strength' in item['requirements']) {
             return false;
           }
-          if (sp[1] && 'dexterity' in item[1]['requirements']) {
+          if (sp[1] && 'dexterity' in item['requirements']) {
             return false;
           }
-          if (sp[2] && 'intelligence' in item[1]['requirements']) {
+          if (sp[2] && 'intelligence' in item['requirements']) {
             return false;
           }
-          if (sp[3] && 'defence' in item[1]['requirements']) {
+          if (sp[3] && 'defence' in item['requirements']) {
             return false;
           }
-          if (sp[4] && 'agility' in item[1]['requirements']) {
+          if (sp[4] && 'agility' in item['requirements']) {
             return false;
           }
           return true;
         })
-        .map((item) => item[0]));
+      );
     }
   }, [itemsList, weaponType, sp, levelReq])
 
+  useEffect(() => {
+    setIndices(null);
+  }, [weaponsList])
+
   async function getItems() {
     const response = await fetch('./data.json');
-    const json: ItemList = await response.json();
+    const json: WynnItem[] = await response.json();
     setItemsList(json);
   }
 
   const calculateWeaponBoosts = (): void => {
     let indicesList: Indices[] = [];
     if (itemsList != null && weaponsList != null) {
-      weaponsList.map((weaponName) => {
-        indicesList.push(getWeaponIndices(weaponName, itemsList[weaponName], powderTier, useSteals, useHealing, useRange, cps, spellCycle, costs, sp));
+      weaponsList.map((weaponItem) => {
+        if (weaponItem) {
+          indicesList.push(getWeaponIndices(weaponItem['displayName'], weaponItem, powderTier, useSteals, useHealing, useRange, cps, spellCycle, costs, sp));
+        }
       })
     }
 

@@ -8,6 +8,12 @@ const APPROX_HEAL = 2500;
 const JUMP_HEIGHT_MULT = 0.1;
 const MELEE_RANGE_MULT = 0.5;
 
+// Helper function to find an item by displayName in the items list
+export const findItemByName = (itemsList: WynnItem[] | null, itemName: string): WynnItem | undefined => {
+  if (!itemsList) return undefined;
+  return itemsList.find(item => item.displayName === itemName);
+};
+
 // Get the base damages/base attack speed of a weapon
 const getDamages = (weapon: WynnItem): Damage => {
     const base = weapon['base']
